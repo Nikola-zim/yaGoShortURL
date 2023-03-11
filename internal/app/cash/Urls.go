@@ -2,47 +2,53 @@ package cash
 
 import (
 	"errors"
-	"log"
+	"strconv"
 	"sync"
 )
 
 type Urls struct {
-	urlsMap map[int]string
+	urlsMap map[string]string
 	mux     sync.RWMutex
 	wg      sync.WaitGroup
 }
 
-func (u *Urls) WriteUrlInCash(string2 string) error {
+func (u *Urls) WriteURLInCash(string2 string) (string, error) {
 	defer u.wg.Done()
 	u.wg.Add(1)
 	u.mux.Lock()
-	//Проверка наличия элемента
-	_, err := u.urlsMap[len(u.urlsMap)]
-	if err {
-		log.Println("Ошибка записи в кеш: значение уже существует")
+	numbOfElements := len(u.urlsMap)
+	//Всегда должнобыть четное число элементов в структуре map
+	if numbOfElements%2 == 0 {
+		//Проверка наличия элемента
+		strKeyCheck := "url:" + string2
+		_, err := u.urlsMap[strKeyCheck]
+		if err {
+			u.mux.Unlock()
+			return "0", errors.New("Ошибка записи в кеш: значение уже существует")
+		}
+		//Запись в map после проверок
+		//Форматирование ключей
+		idKey := "id:" + strconv.Itoa(numbOfElements/2)
+		strKey := "url:" + string2
+		u.urlsMap[idKey] = string2
+		u.urlsMap[strKey] = string2
 		u.mux.Unlock()
-		//TODO вернуть ошибку
-		return errors.New("dummy")
 	}
-	u.urlsMap[len(u.urlsMap)] = string2
-	u.mux.Unlock()
-	return nil
+	return strconv.Itoa(numbOfElements / 2), nil
 }
 
-func (u *Urls) ReadUrlFromCash(int2 int) (string, error) {
+func (u *Urls) ReadURLFromCash(id string) (string, error) {
 	u.mux.RLock()
 	defer u.mux.RUnlock()
-	fullUrl, err := u.urlsMap[int2]
-	if err != true {
-		log.Println("Ошибка чтения из кеша: такого ID не существует")
-		//Todo нормальную ошибку
-		return fullUrl, errors.New("dummy")
+	fullURL, err := u.urlsMap[id]
+	if !err {
+		return fullURL, errors.New("ошибка чтения из кеша: такого ID не существует")
 	}
-	return fullUrl, nil
+	return fullURL, nil
 }
 
 func NewUrls() *Urls {
 	return &Urls{
-		urlsMap: make(map[int]string),
+		urlsMap: make(map[string]string),
 	}
 }

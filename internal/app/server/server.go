@@ -1,9 +1,9 @@
 package server
 
 import (
+	"fmt"
 	"io"
 	"net/http"
-	"strconv"
 	"yaGoShortURL/internal/app/cash"
 )
 
@@ -17,31 +17,38 @@ func NewServer(memory cash.Cash) *Server {
 	}
 }
 
-func (s *Server) helloWorld(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("<h1>Hello, World</h1>"))
-}
-
 func (s *Server) shorterServer(w http.ResponseWriter, r *http.Request) {
 	// проверяем, каким методом получили запрос
 	switch r.Method {
-	// если методом POST
+	//Если метод POST
 	case "POST":
-		w.WriteHeader(201)
-		// читаем Body
+		//Читаем Body
 		b, err := io.ReadAll(r.Body)
-		// обрабатываем ошибку
 		if err != nil {
-			http.Error(w, err.Error(), 500)
+			http.Error(w, err.Error(), 400)
 			return
 		}
-		w.Write(b)
+		//Запись в память
+		id, err := s.memory.WriteURLInCash(string(b))
+		if err != nil {
+			fmt.Println(err)
+			w.WriteHeader(400)
+			return
+		}
+		//Ответ
+		w.Write([]byte(id))
+		w.WriteHeader(201)
+		return
 	case "GET":
 		idStr := r.URL.Query().Get("id")
 		//Todo обработка ошибок
-		id, _ := strconv.Atoi(idStr)
-		str, _ := s.memory.ReadUrlFromCash(id)
-		w.WriteHeader(307)
-		w.Write([]byte(str))
+		id := "id:" + idStr
+		str, _ := s.memory.ReadURLFromCash(id)
+		//w.Header().Set("Location", "str")
+		//w.WriteHeader(307)
+		http.Redirect(w, r, str, 307)
+		fmt.Println(str)
+		return
 
 	default:
 		w.WriteHeader(400)
@@ -50,7 +57,6 @@ func (s *Server) shorterServer(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) StartServer() {
 	// маршрутизация запросов обработчику
-	http.HandleFunc("/hello", s.helloWorld)
 	http.HandleFunc("/", s.shorterServer)
 	http.ListenAndServe(":8080", nil)
 }
