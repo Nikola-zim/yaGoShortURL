@@ -24,7 +24,7 @@ func (u *Urls) WriteURLInCash(string2 string) (string, error) {
 		_, err := u.urlsMap[strKeyCheck]
 		if err {
 			u.mux.Unlock()
-			return "0", errors.New("Ошибка записи в кеш: значение уже существует")
+			return "0", errors.New("URL is already in memory")
 		}
 		//Запись в map после проверок
 		//Форматирование ключей
