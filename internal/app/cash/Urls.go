@@ -12,7 +12,7 @@ type Urls struct {
 	wg      sync.WaitGroup
 }
 
-func (u *Urls) WriteURLInCash(string2 string) (string, error) {
+func (u *Urls) WriteURLInCash(fullURL string) (string, error) {
 	defer u.wg.Done()
 	u.wg.Add(1)
 	u.mux.Lock()
@@ -20,7 +20,7 @@ func (u *Urls) WriteURLInCash(string2 string) (string, error) {
 	//Всегда должнобыть четное число элементов в структуре map
 	if numbOfElements%2 == 0 {
 		//Проверка наличия элемента
-		strKeyCheck := "url:" + string2
+		strKeyCheck := "url:" + fullURL
 		_, err := u.urlsMap[strKeyCheck]
 		if err {
 			u.mux.Unlock()
@@ -29,9 +29,9 @@ func (u *Urls) WriteURLInCash(string2 string) (string, error) {
 		//Запись в map после проверок
 		//Форматирование ключей
 		idKey := "id:" + strconv.Itoa(numbOfElements/2)
-		strKey := "url:" + string2
-		u.urlsMap[idKey] = string2
-		u.urlsMap[strKey] = string2
+		strKey := "url:" + fullURL
+		u.urlsMap[idKey] = fullURL
+		u.urlsMap[strKey] = fullURL
 		u.mux.Unlock()
 	}
 	return strconv.Itoa(numbOfElements / 2), nil

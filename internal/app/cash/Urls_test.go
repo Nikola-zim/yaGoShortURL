@@ -54,7 +54,22 @@ func TestUrls_ReadURLFromCash(t *testing.T) {
 		want    string
 		wantErr bool
 	}{
-		// TODO: Add test cases.
+		{
+			name: "typicalRead",
+			fields: fields{
+				urlsMap: map[string]string{
+					"id:0": "https://golang-blog.blogspot.com/2020/01/map-golang.html",
+				},
+				mux: sync.RWMutex{},
+				wg:  sync.WaitGroup{},
+			},
+			args: args{
+
+				id: "id:0",
+			},
+			want:    "https://golang-blog.blogspot.com/2020/01/map-golang.html",
+			wantErr: false,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -82,7 +97,7 @@ func TestUrls_WriteURLInCash(t *testing.T) {
 		wg      sync.WaitGroup
 	}
 	type args struct {
-		string2 string
+		fullURL string
 	}
 	tests := []struct {
 		name    string
@@ -91,7 +106,19 @@ func TestUrls_WriteURLInCash(t *testing.T) {
 		want    string
 		wantErr bool
 	}{
-		// TODO: Add test cases.
+		{
+			name: "typicalWrite0",
+			fields: fields{
+				urlsMap: map[string]string{},
+				mux:     sync.RWMutex{},
+				wg:      sync.WaitGroup{},
+			},
+			args: args{
+				fullURL: "https://golang-blog.blogspot.com/2020/01/map-golang.html",
+			},
+			want:    "0",
+			wantErr: false,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -100,7 +127,7 @@ func TestUrls_WriteURLInCash(t *testing.T) {
 				mux:     tt.fields.mux,
 				wg:      tt.fields.wg,
 			}
-			got, err := u.WriteURLInCash(tt.args.string2)
+			got, err := u.WriteURLInCash(tt.args.fullURL)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("WriteURLInCash() error = %v, wantErr %v", err, tt.wantErr)
 				return
