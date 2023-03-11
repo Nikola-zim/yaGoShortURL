@@ -2,7 +2,6 @@ package cash
 
 import (
 	"reflect"
-	"sync"
 	"testing"
 )
 
@@ -41,8 +40,6 @@ func TestNewUrls(t *testing.T) {
 func TestUrls_ReadURLFromCash(t *testing.T) {
 	type fields struct {
 		urlsMap map[string]string
-		mux     sync.RWMutex
-		wg      sync.WaitGroup
 	}
 	type args struct {
 		id string
@@ -60,8 +57,6 @@ func TestUrls_ReadURLFromCash(t *testing.T) {
 				urlsMap: map[string]string{
 					"id:0": "https://golang-blog.blogspot.com/2020/01/map-golang.html",
 				},
-				mux: sync.RWMutex{},
-				wg:  sync.WaitGroup{},
 			},
 			args: args{
 
@@ -75,8 +70,6 @@ func TestUrls_ReadURLFromCash(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			u := &Urls{
 				urlsMap: tt.fields.urlsMap,
-				mux:     tt.fields.mux,
-				wg:      tt.fields.wg,
 			}
 			got, err := u.ReadURLFromCash(tt.args.id)
 			if (err != nil) != tt.wantErr {
@@ -93,8 +86,6 @@ func TestUrls_ReadURLFromCash(t *testing.T) {
 func TestUrls_WriteURLInCash(t *testing.T) {
 	type fields struct {
 		urlsMap map[string]string
-		mux     sync.RWMutex
-		wg      sync.WaitGroup
 	}
 	type args struct {
 		fullURL string
@@ -110,8 +101,6 @@ func TestUrls_WriteURLInCash(t *testing.T) {
 			name: "typicalWrite0",
 			fields: fields{
 				urlsMap: map[string]string{},
-				mux:     sync.RWMutex{},
-				wg:      sync.WaitGroup{},
 			},
 			args: args{
 				fullURL: "https://golang-blog.blogspot.com/2020/01/map-golang.html",
@@ -124,8 +113,6 @@ func TestUrls_WriteURLInCash(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			u := &Urls{
 				urlsMap: tt.fields.urlsMap,
-				mux:     tt.fields.mux,
-				wg:      tt.fields.wg,
 			}
 			got, err := u.WriteURLInCash(tt.args.fullURL)
 			if (err != nil) != tt.wantErr {
