@@ -37,6 +37,7 @@ func (s *Server) shorterServer(w http.ResponseWriter, r *http.Request) {
 		}
 		//Ответ
 		w.WriteHeader(http.StatusCreated)
+		id = "http://localhost:8080/" + id
 		w.Write([]byte(id))
 		return
 	case "GET":
