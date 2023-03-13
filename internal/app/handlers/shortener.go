@@ -24,7 +24,6 @@ func (h *Handler) addURL(c *gin.Context) {
 	}
 	id = "http://localhost:8080/" + id
 	c.String(http.StatusCreated, id)
-	return
 }
 
 func (h *Handler) getURL(c *gin.Context) {
@@ -34,8 +33,6 @@ func (h *Handler) getURL(c *gin.Context) {
 	str, _ := h.services.ReadURLFromCash(id)
 	c.Redirect(http.StatusTemporaryRedirect, str)
 	fmt.Println(str)
-	return
-
 }
 
 //func (s *Server) shorterServer(w http.ResponseWriter, r *http.Request) {
