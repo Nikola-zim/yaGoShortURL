@@ -1,37 +1,8 @@
 package cash
 
 import (
-	"reflect"
 	"testing"
 )
-
-func TestNewCash(t *testing.T) {
-	var tests []struct {
-		name string
-		want *Cash
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := NewCash(); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("NewCash() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
-func TestNewUrls(t *testing.T) {
-	var tests []struct {
-		name string
-		want *Urls
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := NewUrls(); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("NewUrls() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
 
 func TestUrls_ReadURLFromCash(t *testing.T) {
 	type fields struct {
