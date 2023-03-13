@@ -12,13 +12,14 @@ func main() {
 
 	serverCash := cash.NewCash()
 	services := service.NewService(serverCash)
-	handlers := handlers.NewHandler(services)
+	myHandlers := handlers.NewHandler(services)
 
 	//Создание экземпляра сервера
 	srv := new(server.Server)
 	//Конфигурация
 	port := "8080"
-	if err := srv.Run(port, handlers.InitRoutes()); err != nil {
+	if err := srv.Run(port, myHandlers.InitRoutes()); err != nil {
 		log.Fatal("error occurred while running http server")
 	}
+
 }

@@ -6,11 +6,9 @@ import (
 )
 
 func TestNewCash(t *testing.T) {
-	tests := []struct {
+	var tests []struct {
 		name string
 		want *Cash
-	}{
-		// TODO: Add test cases.
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -22,11 +20,9 @@ func TestNewCash(t *testing.T) {
 }
 
 func TestNewUrls(t *testing.T) {
-	tests := []struct {
+	var tests []struct {
 		name string
 		want *Urls
-	}{
-		// TODO: Add test cases.
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
