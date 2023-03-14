@@ -64,11 +64,31 @@ func TestPingRoute(t *testing.T) {
 				response: "",
 			},
 		},
+		{
+			name:   "positive test #5",
+			method: "GET",
+			body:   "",
+			id:     "0",
+			want: want{
+				code:     http.StatusTemporaryRedirect,
+				response: "https://habr.com/ru/company/ruvds/blog/562878/",
+			},
+		},
+		{
+			name:   "negative test #6",
+			method: "GET",
+			body:   "",
+			id:     "5",
+			want: want{
+				code:     http.StatusBadRequest,
+				response: "",
+			},
+		},
 	}
 	serverCash := cash.NewCash()
 	services := service.NewService(serverCash)
-	handlers := handlers.NewHandler(services)
-	router := handlers.InitRoutes()
+	myHandlers := handlers.NewHandler(services)
+	router := myHandlers.InitRoutes()
 	for _, tt := range tests {
 		// запускаем каждый тест
 		t.Run(tt.name, func(t *testing.T) {
@@ -82,12 +102,20 @@ func TestPingRoute(t *testing.T) {
 			defer res.Body.Close()
 			// проверяем код ответа
 			assert.Equal(t, tt.want.code, res.StatusCode)
-			// получаем и проверяем тело запроса
-			resBody, err := io.ReadAll(res.Body)
-			if err != nil {
-				t.Fatal(err)
+			switch tt.method {
+			case "POST":
+				// получаем и проверяем тело запроса при запросе POST
+				resBody, err := io.ReadAll(res.Body)
+				if err != nil {
+					t.Fatal(err)
+				}
+				assert.Equal(t, tt.want.response, string(resBody))
+			case "GET":
+				// произошёл ли редирект
+				assert.Equal(t, tt.want.code, res.StatusCode)
+				// получаем и проверяем новый адрес при запросе GET
+				assert.Equal(t, tt.want.response, res.Header.Get("Location"))
 			}
-			assert.Equal(t, tt.want.response, string(resBody))
 		})
 	}
 }

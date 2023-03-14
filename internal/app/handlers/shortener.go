@@ -29,6 +29,11 @@ func (h *Handler) getURL(c *gin.Context) {
 	//Получаем
 	idStr := c.Param("id")
 	id := "id:" + idStr
-	str, _ := h.services.ReadURLFromCash(id)
+	str, err := h.services.ReadURLFromCash(id)
+	if err != nil {
+		c.AbortWithStatus(http.StatusBadRequest)
+		log.Println(err)
+		return
+	}
 	c.Redirect(http.StatusTemporaryRedirect, str)
 }

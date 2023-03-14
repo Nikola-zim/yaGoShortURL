@@ -19,7 +19,7 @@ func TestUrls_ReadURLFromCash(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "typicalRead",
+			name: "positiveRead0",
 			fields: fields{
 				urlsMap: map[string]string{
 					"id:0": "https://golang-blog.blogspot.com/2020/01/map-golang.html",
@@ -31,6 +31,37 @@ func TestUrls_ReadURLFromCash(t *testing.T) {
 			},
 			want:    "https://golang-blog.blogspot.com/2020/01/map-golang.html",
 			wantErr: false,
+		},
+		{
+			name: "positiveRead1",
+			fields: fields{
+				urlsMap: map[string]string{
+					"id:0":  "https://golang-blog.blogspot.com/2020/01/map-golang.html",
+					"id:30": "https://go-traps.appspot.com/#slice-traversal",
+				},
+			},
+			args: args{
+
+				id: "id:30",
+			},
+			want:    "https://go-traps.appspot.com/#slice-traversal",
+			wantErr: false,
+		},
+		{
+			name: "negativeRead2",
+			fields: fields{
+				urlsMap: map[string]string{
+					"id:0":  "https://golang-blog.blogspot.com/2020/01/map-golang.html",
+					"id:30": "https://go-traps.appspot.com/#slice-traversal",
+					"id:11": "",
+				},
+			},
+			args: args{
+
+				id: "id:11",
+			},
+			want:    "",
+			wantErr: true,
 		},
 	}
 	for _, tt := range tests {
@@ -65,7 +96,7 @@ func TestUrls_WriteURLInCash(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "typicalWrite0",
+			name: "positiveWrite0",
 			fields: fields{
 				urlsMap: map[string]string{},
 			},
@@ -74,6 +105,62 @@ func TestUrls_WriteURLInCash(t *testing.T) {
 			},
 			want:    "0",
 			wantErr: false,
+		},
+		{
+			name: "positiveWrite1",
+			fields: fields{
+				urlsMap: map[string]string{
+					"id:0": "https://golang-blog.blogspot.com/2020/01/map-golang.html",
+					"url:https://golang-blog.blogspot.com/2020/01/map-golang.html": "https://golang-blog.blogspot.com/2020/01/map-golang.html",
+				},
+			},
+			args: args{
+				fullURL: "https://blog.mozilla.org/en/",
+			},
+			want:    "1",
+			wantErr: false,
+		},
+		{
+			name: "negativeWrite2",
+			fields: fields{
+				urlsMap: map[string]string{
+					"id:0": "https://golang-blog.blogspot.com/2020/01/map-golang.html",
+					"url:https://golang-blog.blogspot.com/2020/01/map-golang.html": "https://golang-blog.blogspot.com/2020/01/map-golang.html",
+				},
+			},
+			args: args{
+				fullURL: "https://golang-blog.blogspot.com/2020/01/map-golang.html",
+			},
+			want:    "",
+			wantErr: true,
+		},
+		{
+			name: "negativeWrite3",
+			fields: fields{
+				urlsMap: map[string]string{
+					"id:0": "https://golang-blog.blogspot.com/2020/01/map-golang.html",
+					"url:https://golang-blog.blogspot.com/2020/01/map-golang.html": "https://golang-blog.blogspot.com/2020/01/map-golang.html",
+				},
+			},
+			args: args{
+				fullURL: "",
+			},
+			want:    "",
+			wantErr: true,
+		},
+		{
+			name: "negativeWrite4",
+			fields: fields{
+				urlsMap: map[string]string{
+					"id:0": "https://golang-blog.blogspot.com/2020/01/map-golang.html",
+					"url:https://golang-blog.blogspot.com/2020/01/map-golang.html": "https://golang-blog.blogspot.com/2020/01/map-golang.html",
+				},
+			},
+			args: args{
+				fullURL: "qwer",
+			},
+			want:    "",
+			wantErr: true,
 		},
 	}
 	for _, tt := range tests {
