@@ -7,9 +7,9 @@ import (
 	"net/http/httptest"
 	"strings"
 	"testing"
-	"yaGoShortURL/internal/app/cash"
-	"yaGoShortURL/internal/app/handlers"
-	"yaGoShortURL/internal/app/service"
+	"yaGoShortURL/internal/cash"
+	"yaGoShortURL/internal/handlers"
+	"yaGoShortURL/internal/service"
 )
 
 func TestPingRoute(t *testing.T) {

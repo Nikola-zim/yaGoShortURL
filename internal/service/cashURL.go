@@ -1,6 +1,8 @@
 package service
 
-import "yaGoShortURL/internal/app/cash"
+import (
+	"yaGoShortURL/internal/cash"
+)
 
 type CashURLService struct {
 	cash cash.UrlsRW

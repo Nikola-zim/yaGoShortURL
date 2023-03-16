@@ -1,18 +1,20 @@
 package service
 
-import "yaGoShortURL/internal/app/cash"
+import (
+	"yaGoShortURL/internal/cash"
+)
 
-type cashURL interface {
+type CashURL interface {
 	WriteURLInCash(string2 string) (string, error)
 	ReadURLFromCash(string string) (string, error)
 }
 
 type Service struct {
-	cashURL
+	CashURL
 }
 
 func NewService(cash *cash.Cash) *Service {
 	return &Service{
-		cashURL: NewCashURLService(cash.UrlsRW),
+		CashURL: NewCashURLService(cash.UrlsRW),
 	}
 }

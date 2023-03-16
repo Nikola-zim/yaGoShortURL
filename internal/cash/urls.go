@@ -10,12 +10,9 @@ import (
 type Urls struct {
 	urlsMap map[string]string
 	mux     sync.RWMutex
-	wg      sync.WaitGroup
 }
 
 func (u *Urls) WriteURLInCash(fullURL string) (string, error) {
-	defer u.wg.Done()
-	u.wg.Add(1)
 	u.mux.Lock()
 	numbOfElements := len(u.urlsMap)
 	//Проверка того, что передаваемая строка является URL
@@ -41,6 +38,7 @@ func (u *Urls) WriteURLInCash(fullURL string) (string, error) {
 		u.mux.Unlock()
 		return strconv.Itoa(numbOfElements / 2), nil
 	} else {
+		u.mux.Unlock()
 		return "", errors.New("передаваемая строка не является URL")
 	}
 }

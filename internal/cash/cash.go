@@ -1,8 +1,8 @@
 package cash
 
 type UrlsRW interface {
-	WriteURLInCash(string2 string) (string, error)
-	ReadURLFromCash(string string) (string, error)
+	WriteURLInCash(fullURL string) (string, error)
+	ReadURLFromCash(id string) (string, error)
 }
 
 type Cash struct {

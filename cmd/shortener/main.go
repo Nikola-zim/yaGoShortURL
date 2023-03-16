@@ -2,10 +2,13 @@ package main
 
 import (
 	"log"
-	"yaGoShortURL/internal/app/cash"
-	"yaGoShortURL/internal/app/handlers"
-	"yaGoShortURL/internal/app/server"
-	"yaGoShortURL/internal/app/service"
+	"os"
+	"os/signal"
+	"syscall"
+	"yaGoShortURL/internal/cash"
+	"yaGoShortURL/internal/handlers"
+	"yaGoShortURL/internal/server"
+	"yaGoShortURL/internal/service"
 )
 
 func main() {
@@ -18,8 +21,16 @@ func main() {
 	srv := new(server.Server)
 	//Конфигурация
 	port := "8080"
-	if err := srv.Run(port, myHandlers.InitRoutes()); err != nil {
-		log.Fatal("error occurred while running http server")
-	}
-
+	//Канал для прослушивания сигналов ОС
+	cancelChan := make(chan os.Signal, 1)
+	// catch SIGETRM or SIGINTERRUPT
+	signal.Notify(cancelChan, syscall.SIGTERM, syscall.SIGINT)
+	go func() {
+		if err := srv.Run(port, myHandlers.InitRoutes()); err != nil {
+			log.Fatal("error occurred while running http server")
+		}
+	}()
+	//Остановка при получении сигнала от ОС и запись в лог
+	sig := <-cancelChan
+	log.Printf("Caught signal %v", sig)
 }
