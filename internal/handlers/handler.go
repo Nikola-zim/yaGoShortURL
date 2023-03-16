@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"github.com/gin-gonic/gin"
-	"yaGoShortURL/internal/service"
 )
 
 type addAndGetURL interface {
@@ -10,12 +9,17 @@ type addAndGetURL interface {
 	getURL(c *gin.Context)
 }
 
+type addAndGetURLService interface {
+	WriteURLInCash(string2 string) (string, error)
+	ReadURLFromCash(string string) (string, error)
+}
+
 type Handler struct {
 	addAndGetURL
 }
 
-func NewHandler(addAndGetURL service.CashURL) *Handler {
-	return &Handler{addAndGetURL: NewAddAndGetURLHandler(addAndGetURL)}
+func NewHandler(service addAndGetURLService) *Handler {
+	return &Handler{addAndGetURL: NewAddAndGetURLHandler(service)}
 }
 
 func (h *Handler) InitRoutes() *gin.Engine {

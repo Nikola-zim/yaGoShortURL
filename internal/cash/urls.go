@@ -14,6 +14,7 @@ type Urls struct {
 
 func (u *Urls) WriteURLInCash(fullURL string) (string, error) {
 	u.mux.Lock()
+	defer u.mux.Unlock()
 	numbOfElements := len(u.urlsMap)
 	//Проверка того, что передаваемая строка является URL
 	re := regexp.MustCompile(`^http(s)?:\/\/[^\s]+$`)
@@ -22,7 +23,6 @@ func (u *Urls) WriteURLInCash(fullURL string) (string, error) {
 		strKeyCheck := "url:" + fullURL
 		_, err := u.urlsMap[strKeyCheck]
 		if err {
-			u.mux.Unlock()
 			return "", errors.New("URL is already in memory")
 		}
 		//Всегда должнобыть четное число элементов в структуре map
@@ -35,10 +35,8 @@ func (u *Urls) WriteURLInCash(fullURL string) (string, error) {
 		strKey := "url:" + fullURL
 		u.urlsMap[idKey] = fullURL
 		u.urlsMap[strKey] = fullURL
-		u.mux.Unlock()
 		return strconv.Itoa(numbOfElements / 2), nil
 	} else {
-		u.mux.Unlock()
 		return "", errors.New("передаваемая строка не является URL")
 	}
 }

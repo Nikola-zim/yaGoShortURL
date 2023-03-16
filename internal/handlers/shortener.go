@@ -4,11 +4,10 @@ import (
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
-	"yaGoShortURL/internal/service"
 )
 
 type AddAndGetURLHandler struct {
-	service service.CashURL
+	service addAndGetURLService
 }
 
 func (a *AddAndGetURLHandler) addURL(c *gin.Context) {
@@ -43,6 +42,6 @@ func (a *AddAndGetURLHandler) getURL(c *gin.Context) {
 	c.Redirect(http.StatusTemporaryRedirect, str)
 }
 
-func NewAddAndGetURLHandler(service service.CashURL) *AddAndGetURLHandler {
+func NewAddAndGetURLHandler(service addAndGetURLService) *AddAndGetURLHandler {
 	return &AddAndGetURLHandler{service: service}
 }
