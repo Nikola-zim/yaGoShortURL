@@ -45,6 +45,7 @@ func (a *AddAndGetURLHandler) getURL(c *gin.Context) {
 
 func (a *AddAndGetURLHandler) addAndGetJSON(c *gin.Context) {
 	var json static.JSONApi
+	var result static.JSONRes
 	err := c.ShouldBindJSON(&json)
 	if err != nil {
 		//c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -58,8 +59,8 @@ func (a *AddAndGetURLHandler) addAndGetJSON(c *gin.Context) {
 		c.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
-	id = "http://localhost:8080/" + id
-	c.JSON(http.StatusCreated, id)
+	result.Res = "http://localhost:8080/" + id
+	c.JSON(http.StatusCreated, result)
 }
 
 func NewAddAndGetURLHandler(service addAndGetURLService) *AddAndGetURLHandler {

@@ -2,6 +2,7 @@ package cash
 
 import (
 	"errors"
+	"fmt"
 	"regexp"
 	"strconv"
 	"sync"
@@ -37,6 +38,7 @@ func (u *Urls) WriteURLInCash(fullURL string) (string, error) {
 		u.urlsMap[strKey] = fullURL
 		return strconv.Itoa(numbOfElements / 2), nil
 	} else {
+		fmt.Println(fullURL)
 		return "", errors.New("передаваемая строка не является URL")
 	}
 }
