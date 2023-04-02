@@ -52,14 +52,14 @@ func (a *AddAndGetURLHandler) addAndGetJSON(c *gin.Context) {
 		return
 	}
 	//Запись в память
-	id, err := a.service.WriteURLInCash(json.Url)
+	id, err := a.service.WriteURLInCash(json.URL)
 	if err != nil {
 		log.Println(err)
 		c.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
 	id = "http://localhost:8080/" + id
-	c.JSON(http.StatusCreated, json)
+	c.JSON(http.StatusCreated, id)
 }
 
 func NewAddAndGetURLHandler(service addAndGetURLService) *AddAndGetURLHandler {
