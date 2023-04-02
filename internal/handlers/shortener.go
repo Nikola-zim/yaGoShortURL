@@ -58,9 +58,7 @@ func (a *AddAndGetURLHandler) addAndGetJSON(c *gin.Context) {
 	b, err := c.GetRawData()
 	fmt.Println(json.Unmarshal(b, &result))
 	if err != nil {
-		//c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		c.AbortWithStatus(http.StatusBadRequest)
-		return
+		fmt.Println(err)
 	}
 	//Запись в память
 	id, err := a.service.WriteURLInCash(myJSON.URL)
