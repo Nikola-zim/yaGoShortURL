@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"encoding/json"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
@@ -44,16 +46,18 @@ func (a *AddAndGetURLHandler) getURL(c *gin.Context) {
 }
 
 func (a *AddAndGetURLHandler) addAndGetJSON(c *gin.Context) {
-	var json static.JSONApi
+	var myJson static.JSONApi
 	var result static.JSONRes
-	err := c.ShouldBindJSON(&json)
+	err := c.ShouldBindJSON(&myJson)
+	b, err := c.GetRawData()
+	fmt.Println(json.Unmarshal(b, &result))
 	if err != nil {
 		//c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		c.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
 	//Запись в память
-	id, err := a.service.WriteURLInCash(json.URL)
+	id, err := a.service.WriteURLInCash(myJson.URL)
 	if err != nil {
 		log.Println(err)
 		c.AbortWithStatus(http.StatusBadRequest)
