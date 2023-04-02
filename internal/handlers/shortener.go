@@ -46,9 +46,9 @@ func (a *AddAndGetURLHandler) getURL(c *gin.Context) {
 }
 
 func (a *AddAndGetURLHandler) addAndGetJSON(c *gin.Context) {
-	var myJson static.JSONApi
+	var myJSON static.JSONApi
 	var result static.JSONRes
-	err := c.ShouldBindJSON(&myJson)
+	err := c.ShouldBindJSON(&myJSON)
 	b, err := c.GetRawData()
 	fmt.Println(json.Unmarshal(b, &result))
 	if err != nil {
@@ -57,7 +57,7 @@ func (a *AddAndGetURLHandler) addAndGetJSON(c *gin.Context) {
 		return
 	}
 	//Запись в память
-	id, err := a.service.WriteURLInCash(myJson.URL)
+	id, err := a.service.WriteURLInCash(myJSON.URL)
 	if err != nil {
 		log.Println(err)
 		c.AbortWithStatus(http.StatusBadRequest)
