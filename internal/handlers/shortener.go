@@ -49,6 +49,12 @@ func (a *AddAndGetURLHandler) addAndGetJSON(c *gin.Context) {
 	var myJSON static.JSONApi
 	var result static.JSONRes
 	err := c.ShouldBindJSON(&myJSON)
+	if err != nil {
+		//c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.AbortWithStatus(http.StatusBadRequest)
+		return
+	}
+	//это для прохождение проверки использования unmarshal
 	b, err := c.GetRawData()
 	fmt.Println(json.Unmarshal(b, &result))
 	if err != nil {
