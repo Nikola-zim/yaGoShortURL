@@ -43,13 +43,22 @@ func (a *AddAndGetURLHandler) getURL(c *gin.Context) {
 	c.Redirect(http.StatusTemporaryRedirect, str)
 }
 
-func (a *AddAndGetURLHandler) addAndGetJson(c *gin.Context) {
-	var json static.JsonApi
+func (a *AddAndGetURLHandler) addAndGetJSON(c *gin.Context) {
+	var json static.JSONApi
 	err := c.ShouldBindJSON(&json)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-
+		//c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.AbortWithStatus(http.StatusBadRequest)
+		return
 	}
+	//Запись в память
+	id, err := a.service.WriteURLInCash(json.Url)
+	if err != nil {
+		log.Println(err)
+		c.AbortWithStatus(http.StatusBadRequest)
+		return
+	}
+	id = "http://localhost:8080/" + id
 	c.JSON(http.StatusCreated, json)
 }
 

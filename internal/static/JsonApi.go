@@ -1,5 +1,5 @@
 package static
 
-type JsonApi struct {
+type JSONApi struct {
 	Url string
 }
