@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
+	"yaGoShortURL/internal/static"
 )
 
 type AddAndGetURLHandler struct {
@@ -40,6 +41,16 @@ func (a *AddAndGetURLHandler) getURL(c *gin.Context) {
 		return
 	}
 	c.Redirect(http.StatusTemporaryRedirect, str)
+}
+
+func (a *AddAndGetURLHandler) addAndGetJson(c *gin.Context) {
+	var json static.JsonApi
+	err := c.ShouldBindJSON(&json)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+
+	}
+	c.JSON(http.StatusCreated, json)
 }
 
 func NewAddAndGetURLHandler(service addAndGetURLService) *AddAndGetURLHandler {

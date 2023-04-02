@@ -7,6 +7,7 @@ import (
 type addAndGetURL interface {
 	addURL(c *gin.Context)
 	getURL(c *gin.Context)
+	addAndGetJson(c *gin.Context)
 }
 
 type addAndGetURLService interface {
@@ -19,7 +20,9 @@ type Handler struct {
 }
 
 func NewHandler(service addAndGetURLService) *Handler {
-	return &Handler{addAndGetURL: NewAddAndGetURLHandler(service)}
+	return &Handler{
+		addAndGetURL: NewAddAndGetURLHandler(service),
+	}
 }
 
 func (h *Handler) InitRoutes() *gin.Engine {
@@ -28,6 +31,10 @@ func (h *Handler) InitRoutes() *gin.Engine {
 	{
 		shortenerURL.POST("/", h.addURL)
 		shortenerURL.GET("/:id", h.getURL)
+	}
+	shorten := router.Group("/api/")
+	{
+		shorten.POST("shorten", h.addAndGetJson)
 	}
 	return router
 }
