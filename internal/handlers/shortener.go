@@ -30,7 +30,7 @@ func (a *AddAndGetURLHandler) addURL(c *gin.Context) {
 		return
 	}
 	//id = "http://localhost:8080/" + id
-	id = fmt.Sprintf("%s%s", "http://", os.Getenv("BASE_URL"))
+	id = fmt.Sprintf("%s%s%s%s", "http://", os.Getenv("BASE_URL"), "/", id)
 	c.String(http.StatusCreated, id)
 }
 
@@ -69,8 +69,13 @@ func (a *AddAndGetURLHandler) addAndGetJSON(c *gin.Context) {
 		c.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
-	result.Res = "http://localhost:8080/" + id
-	c.JSON(http.StatusCreated, result)
+	if baseURL := os.Getenv("BASE_URL"); baseURL != "" {
+		result.Res = fmt.Sprintf("%s%s%s%s", "http://", os.Getenv("BASE_URL"), "/", id)
+		c.JSON(http.StatusCreated, result)
+	} else {
+		result.Res = "http://localhost:8080/" + id
+		c.JSON(http.StatusCreated, result)
+	}
 }
 
 func NewAddAndGetURLHandler(service addAndGetURLService) *AddAndGetURLHandler {
