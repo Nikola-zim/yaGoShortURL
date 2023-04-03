@@ -29,8 +29,6 @@ func main() {
 		log.Fatal(err)
 	}
 	go func() {
-		cfg.ServerAddress = "127.0.0.1:8080"
-		cfg.BaseURL = "127.0.0.1:8080"
 		if err := srv.Run(cfg.ServerAddress, myHandlers.InitRoutes()); err != nil {
 			log.Fatal("error occurred while running http server")
 		}

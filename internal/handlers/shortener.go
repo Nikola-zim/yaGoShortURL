@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
+	"os"
 	"yaGoShortURL/internal/static"
 )
 
@@ -28,7 +29,8 @@ func (a *AddAndGetURLHandler) addURL(c *gin.Context) {
 		c.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
-	id = "http://localhost:8080/" + id
+	//id = "http://localhost:8080/" + id
+	id = fmt.Sprintf("%s%s", "http://", os.Getenv("BASE_URL"))
 	c.String(http.StatusCreated, id)
 }
 
