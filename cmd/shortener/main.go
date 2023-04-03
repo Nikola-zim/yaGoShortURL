@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"github.com/caarlos0/env/v6"
 	"log"
 	"os"
 	"os/signal"
@@ -10,6 +11,7 @@ import (
 	"yaGoShortURL/internal/handlers"
 	"yaGoShortURL/internal/server"
 	"yaGoShortURL/internal/service"
+	"yaGoShortURL/internal/static"
 )
 
 func main() {
@@ -20,10 +22,16 @@ func main() {
 
 	//Создание экземпляра сервера
 	srv := new(server.Server)
-	//Конфигурация
-	port := "8080"
+	//Получение конфигурации из переменных окружения
+	var cfg static.Config
+	err := env.Parse(&cfg)
+	if err != nil {
+		log.Fatal(err)
+	}
 	go func() {
-		if err := srv.Run(port, myHandlers.InitRoutes()); err != nil {
+		cfg.ServerAddress = "127.0.0.1:8080"
+		cfg.BaseURL = "127.0.0.1:8080"
+		if err := srv.Run(cfg.ServerAddress, myHandlers.InitRoutes()); err != nil {
 			log.Fatal("error occurred while running http server")
 		}
 	}()

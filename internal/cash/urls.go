@@ -36,6 +36,7 @@ func (u *Urls) WriteURLInCash(fullURL string) (string, error) {
 		strKey := "url:" + fullURL
 		u.urlsMap[idKey] = fullURL
 		u.urlsMap[strKey] = fullURL
+		//fmt.Println(fullURL)
 		return strconv.Itoa(numbOfElements / 2), nil
 	} else {
 		fmt.Println(fullURL)
