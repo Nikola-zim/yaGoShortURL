@@ -11,6 +11,9 @@ type Server struct {
 }
 
 func (s *Server) Run(serverAddress string, handler http.Handler) error {
+	if serverAddress == "" {
+		serverAddress = ":8080"
+	}
 	s.httpServer = &http.Server{
 		Addr:           serverAddress,
 		Handler:        handler,
