@@ -30,8 +30,13 @@ func (a *AddAndGetURLHandler) addURL(c *gin.Context) {
 		return
 	}
 	//id = "http://localhost:8080/" + id
-	id = fmt.Sprintf("%s%s%s%s", "http://", os.Getenv("BASE_URL"), "/", id)
-	c.String(http.StatusCreated, id)
+	if baseURL := os.Getenv("BASE_URL"); baseURL != "" {
+		id = fmt.Sprintf("%s%s%s%s", "http://", os.Getenv("BASE_URL"), "/", id)
+		c.String(http.StatusCreated, id)
+	} else {
+		id = "http://localhost:8080/" + id
+		c.String(http.StatusCreated, id)
+	}
 }
 
 func (a *AddAndGetURLHandler) getURL(c *gin.Context) {
