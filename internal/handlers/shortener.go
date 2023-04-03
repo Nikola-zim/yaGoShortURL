@@ -31,7 +31,7 @@ func (a *AddAndGetURLHandler) addURL(c *gin.Context) {
 	}
 	//id = "http://localhost:8080/" + id
 	if baseURL := os.Getenv("BASE_URL"); baseURL != "" {
-		id = fmt.Sprintf("%s%s%s%s", "http://", os.Getenv("BASE_URL"), "/", id)
+		id = fmt.Sprintf("%s%s%s", os.Getenv("BASE_URL"), "/", id)
 		c.String(http.StatusCreated, id)
 	} else {
 		id = "http://localhost:8080/" + id
@@ -75,7 +75,7 @@ func (a *AddAndGetURLHandler) addAndGetJSON(c *gin.Context) {
 		return
 	}
 	if baseURL := os.Getenv("BASE_URL"); baseURL != "" {
-		result.Res = fmt.Sprintf("%s%s%s%s", "http://", os.Getenv("BASE_URL"), "/", id)
+		result.Res = fmt.Sprintf("%s%s%s", os.Getenv("BASE_URL"), "/", id)
 		c.JSON(http.StatusCreated, result)
 	} else {
 		result.Res = "http://localhost:8080/" + id
