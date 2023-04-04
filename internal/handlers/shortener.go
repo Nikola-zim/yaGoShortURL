@@ -51,7 +51,6 @@ func (a *AddAndGetURLHandler) addAndGetJSON(c *gin.Context) {
 	var myJSON static.JSONApi
 	var result static.JSONRes
 	err := c.ShouldBindJSON(&myJSON)
-	fmt.Println("1111111111111111111111")
 	if err != nil {
 		//c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		c.AbortWithStatus(http.StatusBadRequest)

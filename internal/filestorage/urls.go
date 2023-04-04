@@ -79,9 +79,8 @@ func NewUrls(cfg static.ConfigInit) (*UrlsFilesRW, error) {
 	if !ok {
 		panic("failed to get caller info")
 	}
-
 	modulePath := filepath.Dir(callerName)
-	filename = fmt.Sprintf("%s%v", modulePath, cfg.FileStoragePath)
+	filename = fmt.Sprintf("%s%s", modulePath, cfg.FileStoragePath)
 
 	// Для инициализации пути в unit-тестах
 	if cfg.UnitTestFlag {
