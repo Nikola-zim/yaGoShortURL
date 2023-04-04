@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 	"yaGoShortURL/internal/cash"
-	"yaGoShortURL/internal/fileStorage"
+	"yaGoShortURL/internal/file_storage"
 	"yaGoShortURL/internal/handlers"
 	"yaGoShortURL/internal/service"
 )
@@ -87,7 +87,7 @@ func TestPingRoute(t *testing.T) {
 		},
 	}
 	serverCash := cash.NewCash()
-	serverFileStorage := fileStorage.NewFileStorage()
+	serverFileStorage := file_storage.NewFileStorage()
 	services := service.NewService(serverCash, serverFileStorage)
 	myHandlers := handlers.NewHandler(services)
 	router := myHandlers.InitRoutes()
@@ -105,6 +105,10 @@ func TestPingRoute(t *testing.T) {
 				err := Body.Close()
 				if err != nil {
 					t.Fatal(err)
+				}
+				err = res.Body.Close()
+				if err != nil {
+					return
 				}
 			}(res.Body)
 			// проверяем код ответа

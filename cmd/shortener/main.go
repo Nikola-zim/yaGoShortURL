@@ -8,7 +8,7 @@ import (
 	"os/signal"
 	"syscall"
 	"yaGoShortURL/internal/cash"
-	"yaGoShortURL/internal/fileStorage"
+	"yaGoShortURL/internal/file_storage"
 	"yaGoShortURL/internal/handlers"
 	"yaGoShortURL/internal/server"
 	"yaGoShortURL/internal/service"
@@ -18,7 +18,7 @@ import (
 func main() {
 
 	serverCash := cash.NewCash()
-	serverFileStorage := fileStorage.NewFileStorage()
+	serverFileStorage := file_storage.NewFileStorage()
 	services := service.NewService(serverCash, serverFileStorage)
 	myHandlers := handlers.NewHandler(services)
 	//Восстановление кеша
