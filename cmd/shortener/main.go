@@ -2,12 +2,14 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"github.com/caarlos0/env/v6"
 	"log"
 	"os"
 	"os/signal"
 	"syscall"
 	"yaGoShortURL/internal/cash"
+	"yaGoShortURL/internal/fileStorage"
 	"yaGoShortURL/internal/handlers"
 	"yaGoShortURL/internal/server"
 	"yaGoShortURL/internal/service"
@@ -17,14 +19,21 @@ import (
 func main() {
 
 	serverCash := cash.NewCash()
-	services := service.NewService(serverCash)
+	serverFileStorage := fileStorage.NewFileStorage()
+	services := service.NewService(serverCash, serverFileStorage)
 	myHandlers := handlers.NewHandler(services)
 
+	//Восстановление кеша
+	file, err := services.Memory.RecoverAllURL()
+	fmt.Println(file)
+	if err != nil {
+		log.Fatal(err)
+	}
 	//Создание экземпляра сервера
 	srv := new(server.Server)
 	//Получение конфигурации из переменных окружения
 	var cfg static.Config
-	err := env.Parse(&cfg)
+	err = env.Parse(&cfg)
 	if err != nil {
 		log.Fatal(err)
 	}

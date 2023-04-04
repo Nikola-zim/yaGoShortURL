@@ -22,14 +22,15 @@ func (a *AddAndGetURLHandler) addURL(c *gin.Context) {
 		log.Println(err)
 		return
 	}
-	//Запись в память
+	//Запись в кеш
 	id, err := a.service.WriteURLInCash(string(b))
 	if err != nil {
 		log.Println(err)
 		c.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
-	//id = "http://localhost:8080/" + id
+	//TODO запись в файл
+	//TODO переделать получение переменной окружения
 	if baseURL := os.Getenv("BASE_URL"); baseURL != "" {
 		id = fmt.Sprintf("%s%s%s", os.Getenv("BASE_URL"), "/", id)
 		c.String(http.StatusCreated, id)
@@ -67,13 +68,15 @@ func (a *AddAndGetURLHandler) addAndGetJSON(c *gin.Context) {
 	if err != nil {
 		fmt.Println(err)
 	}
-	//Запись в память
+	//Запись в кеш
 	id, err := a.service.WriteURLInCash(myJSON.URL)
 	if err != nil {
 		log.Println(err)
 		c.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
+	//TODO запись в файл
+	//TODO переделать получение переменной окружения
 	if baseURL := os.Getenv("BASE_URL"); baseURL != "" {
 		result.Res = fmt.Sprintf("%s%s%s", os.Getenv("BASE_URL"), "/", id)
 		c.JSON(http.StatusCreated, result)
