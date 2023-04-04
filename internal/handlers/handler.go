@@ -2,11 +2,13 @@ package handlers
 
 import (
 	"github.com/gin-gonic/gin"
+	"yaGoShortURL/internal/static"
 )
 
 type addAndGetURL interface {
 	addURL(c *gin.Context)
 	getURL(c *gin.Context)
+	addAndGetJSON(c *gin.Context)
 }
 
 type addAndGetURLService interface {
@@ -18,8 +20,10 @@ type Handler struct {
 	addAndGetURL
 }
 
-func NewHandler(service addAndGetURLService) *Handler {
-	return &Handler{addAndGetURL: NewAddAndGetURLHandler(service)}
+func NewHandler(service addAndGetURLService, cfg static.ConfigInit) *Handler {
+	return &Handler{
+		addAndGetURL: NewAddAndGetURLHandler(service, cfg),
+	}
 }
 
 func (h *Handler) InitRoutes() *gin.Engine {
@@ -28,6 +32,10 @@ func (h *Handler) InitRoutes() *gin.Engine {
 	{
 		shortenerURL.POST("/", h.addURL)
 		shortenerURL.GET("/:id", h.getURL)
+	}
+	shorten := router.Group("/api/")
+	{
+		shorten.POST("shorten", h.addAndGetJSON)
 	}
 	return router
 }

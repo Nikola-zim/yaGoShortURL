@@ -8,6 +8,7 @@ import (
 	"strings"
 	"testing"
 	"yaGoShortURL/internal/cash"
+	"yaGoShortURL/internal/filestorage"
 	"yaGoShortURL/internal/handlers"
 	"yaGoShortURL/internal/service"
 )
@@ -85,9 +86,15 @@ func TestPingRoute(t *testing.T) {
 			},
 		},
 	}
-	serverCash := cash.NewCash()
-	services := service.NewService(serverCash)
-	myHandlers := handlers.NewHandler(services)
+	// Конфигурирование сервиса
+	cfg := configInit()
+	cfg.UnitTestFlag = true
+	// Создание экземпляров компоненинтов сервиса
+	serverCash := cash.NewCash(cfg)
+	serverFileStorage := filestorage.NewFileStorage(cfg)
+	services := service.NewService(serverCash, serverFileStorage)
+	myHandlers := handlers.NewHandler(services, cfg)
+
 	router := myHandlers.InitRoutes()
 	for _, tt := range tests {
 		// запускаем каждый тест
@@ -100,6 +107,12 @@ func TestPingRoute(t *testing.T) {
 			router.ServeHTTP(w, req)
 			res := w.Result()
 			defer res.Body.Close()
+			//defer func(Body io.ReadCloser) {
+			//	err := Body.Close()
+			//	if err != nil {
+			//		t.Fatal(err)
+			//	}
+			//}(res.Body)
 			// проверяем код ответа
 			assert.Equal(t, tt.want.code, res.StatusCode)
 			switch tt.method {

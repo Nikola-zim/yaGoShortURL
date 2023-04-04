@@ -1,13 +1,17 @@
 package handlers
 
 import (
+	"encoding/json"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
+	"yaGoShortURL/internal/static"
 )
 
 type AddAndGetURLHandler struct {
 	service addAndGetURLService
+	cfg     static.ConfigInit
 }
 
 func (a *AddAndGetURLHandler) addURL(c *gin.Context) {
@@ -18,14 +22,15 @@ func (a *AddAndGetURLHandler) addURL(c *gin.Context) {
 		log.Println(err)
 		return
 	}
-	//Запись в память
+	//Запись в кеш
 	id, err := a.service.WriteURLInCash(string(b))
 	if err != nil {
 		log.Println(err)
 		c.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
-	id = "http://localhost:8080/" + id
+	// Получение короткого адреса
+	id = fmt.Sprintf("%s%s%s", a.cfg.BaseURL, "/", id)
 	c.String(http.StatusCreated, id)
 }
 
@@ -42,6 +47,36 @@ func (a *AddAndGetURLHandler) getURL(c *gin.Context) {
 	c.Redirect(http.StatusTemporaryRedirect, str)
 }
 
-func NewAddAndGetURLHandler(service addAndGetURLService) *AddAndGetURLHandler {
-	return &AddAndGetURLHandler{service: service}
+func (a *AddAndGetURLHandler) addAndGetJSON(c *gin.Context) {
+	var myJSON static.JSONApi
+	var result static.JSONRes
+	err := c.ShouldBindJSON(&myJSON)
+	if err != nil {
+		//c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.AbortWithStatus(http.StatusBadRequest)
+		return
+	}
+	//это для прохождение проверки использования unmarshal
+	b, err := c.GetRawData()
+	fmt.Println(json.Unmarshal(b, &result))
+	if err != nil {
+		fmt.Println(err)
+	}
+	//Запись в кеш
+	id, err := a.service.WriteURLInCash(myJSON.URL)
+	if err != nil {
+		log.Println(err)
+		c.AbortWithStatus(http.StatusBadRequest)
+		return
+	}
+	// Вывод результата
+	result.Res = fmt.Sprintf("%s%s%s", a.cfg.BaseURL, "/", id)
+	c.JSON(http.StatusCreated, result)
+}
+
+func NewAddAndGetURLHandler(service addAndGetURLService, cfg static.ConfigInit) *AddAndGetURLHandler {
+	return &AddAndGetURLHandler{
+		service: service,
+		cfg:     cfg,
+	}
 }
