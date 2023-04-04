@@ -1,4 +1,4 @@
-package file_storage
+package filestorage
 
 type UrlsRW interface {
 	WriteURLInFile(fullURL string, id string) error

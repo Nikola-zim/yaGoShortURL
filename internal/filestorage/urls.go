@@ -1,4 +1,4 @@
-package file_storage
+package filestorage
 
 import (
 	"bufio"
@@ -74,7 +74,7 @@ func NewUrls() (*UrlsFilesRW, error) {
 	var filename string
 	if filename = os.Getenv("FILE_STORAGE_PATH"); filename == "" {
 		//goPath, _ := os.Getwd()
-		//filename = fmt.Sprintf("%s%s", goPath, "/internal/file_storage/URLStorage.json")
+		//filename = fmt.Sprintf("%s%s", goPath, "/internal/filestorage/URLStorage.json")
 		//Получим абсолютный путь к модулю
 		_, callerName, _, ok := runtime.Caller(0)
 		if !ok {
