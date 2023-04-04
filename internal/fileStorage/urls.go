@@ -39,7 +39,7 @@ func (u UrlsFilesRW) WriteURLInFile(fullURL string, id string) error {
 	return u.writer.Flush()
 }
 
-func (u UrlsFilesRW) ReadAllURLFromFile(id string) (string, error) {
+func (u UrlsFilesRW) ReadNextURLFromFile() (string, error) {
 	if !u.scanner.Scan() {
 		return "", u.scanner.Err()
 	}
@@ -53,6 +53,18 @@ func (u UrlsFilesRW) ReadAllURLFromFile(id string) (string, error) {
 	}
 
 	return event.FullURL, nil
+}
+
+func (u UrlsFilesRW) CloseFile() error {
+	err := u.fileToWrite.Close()
+	if err != nil {
+		return err
+	}
+	err = u.fileToRead.Close()
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func NewUrls() (*UrlsFilesRW, error) {

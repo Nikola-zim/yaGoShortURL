@@ -1,20 +1,32 @@
 package service
 
-import "yaGoShortURL/internal/cash"
+import (
+	"yaGoShortURL/internal/cash"
+)
 
-type memoryService struct {
+type MemoryService struct {
 	cash      cash.UrlsRW
 	fileStore FileStoreURL
 }
 
-func (m memoryService) RecoverAllURL() ([]string, error) {
-	res := make([]string, 5)
-	res[0], _ = m.fileStore.ReadAllURLFromFile("1")
-	return res, nil
+func (m MemoryService) RecoverAllURL() error {
+	for {
+		var nextURL string
+		nextURL, err := m.fileStore.ReadNextURLFromFile()
+		if err != nil || nextURL == "" {
+			break
+		}
+		_, err = m.cash.WriteURLInCash(nextURL)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+
 }
 
-func NewMemoryService(cash cash.UrlsRW, fileStore FileStoreURL) *memoryService {
-	return &memoryService{
+func NewMemoryService(cash cash.UrlsRW, fileStore FileStoreURL) *MemoryService {
+	return &MemoryService{
 		cash:      cash,
 		fileStore: fileStore,
 	}

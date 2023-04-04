@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"time"
 )
@@ -12,7 +13,7 @@ type Server struct {
 
 func (s *Server) Run(serverAddress string, handler http.Handler) error {
 	if serverAddress == "" {
-		serverAddress = ":8080"
+		serverAddress = "localhost:8080"
 	}
 	s.httpServer = &http.Server{
 		Addr:           serverAddress,
@@ -21,7 +22,7 @@ func (s *Server) Run(serverAddress string, handler http.Handler) error {
 		ReadTimeout:    10 * time.Second,
 		WriteTimeout:   10 * time.Second,
 	}
-
+	fmt.Printf("%s%s\n", "Server address is: ", serverAddress)
 	return s.httpServer.ListenAndServe()
 }
 

@@ -2,7 +2,8 @@ package fileStorage
 
 type UrlsRW interface {
 	WriteURLInFile(fullURL string, id string) error
-	ReadAllURLFromFile(id string) (string, error)
+	ReadNextURLFromFile() (string, error)
+	CloseFile() error
 }
 
 type FileStorage struct {

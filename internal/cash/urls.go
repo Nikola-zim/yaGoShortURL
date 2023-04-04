@@ -2,7 +2,7 @@ package cash
 
 import (
 	"errors"
-	"fmt"
+	"log"
 	"regexp"
 	"strconv"
 	"sync"
@@ -17,6 +17,7 @@ func (u *Urls) WriteURLInCash(fullURL string) (string, error) {
 	u.mux.Lock()
 	defer u.mux.Unlock()
 	numbOfElements := len(u.urlsMap)
+	log.Println(fullURL)
 	//Проверка того, что передаваемая строка является URL
 	re := regexp.MustCompile(`^http(s)?:\/\/[^\s]+$`)
 	if re.MatchString(fullURL) {
@@ -38,7 +39,7 @@ func (u *Urls) WriteURLInCash(fullURL string) (string, error) {
 		u.urlsMap[strKey] = fullURL
 		return strconv.Itoa(numbOfElements / 2), nil
 	} else {
-		fmt.Println(fullURL)
+
 		return "", errors.New("передаваемая строка не является URL")
 	}
 }

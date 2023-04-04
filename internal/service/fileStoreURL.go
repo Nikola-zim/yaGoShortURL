@@ -1,6 +1,9 @@
 package service
 
-import "yaGoShortURL/internal/cash"
+import (
+	"log"
+	"yaGoShortURL/internal/cash"
+)
 
 type FileStoreURLService struct {
 	cash      cash.UrlsRW
@@ -8,17 +11,17 @@ type FileStoreURLService struct {
 }
 
 func (f FileStoreURLService) WriteURLInFile(fullURL string, id string) error {
-	panic("implement me")
+	log.Println(fullURL, id)
+	return nil
 }
 
-func (f FileStoreURLService) ReadAllURLFromFile(string string) (string, error) {
-	//TODO implement me
-	panic("implement me")
+func (f FileStoreURLService) ReadNextURLFromFile() (string, error) {
+	return "", nil
 }
 
-func NewFileStoreURLService(cash cash.UrlsRW, fileStore FileStoreURL) *FileStoreURLService {
-	return &FileStoreURLService{
-		cash:      cash,
-		fileStore: fileStore,
-	}
-}
+//func NewFileStoreURLService(cash cash.UrlsRW, fileStore FileStoreURL) *FileStoreURLService {
+//	return &FileStoreURLService{
+//		cash:      cash,
+//		fileStore: fileStore,
+//	}
+//}

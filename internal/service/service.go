@@ -8,11 +8,11 @@ type CashURL interface {
 // FileStoreURL Интерфейс работы с файлами
 type FileStoreURL interface {
 	WriteURLInFile(fullURL string, id string) error
-	ReadAllURLFromFile(string string) (string, error)
+	ReadNextURLFromFile() (string, error)
 }
 
 type Memory interface {
-	RecoverAllURL() ([]string, error)
+	RecoverAllURL() error
 }
 
 type Service struct {

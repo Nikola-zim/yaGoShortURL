@@ -8,6 +8,7 @@ import (
 	"strings"
 	"testing"
 	"yaGoShortURL/internal/cash"
+	"yaGoShortURL/internal/fileStorage"
 	"yaGoShortURL/internal/handlers"
 	"yaGoShortURL/internal/service"
 )
@@ -86,7 +87,8 @@ func TestPingRoute(t *testing.T) {
 		},
 	}
 	serverCash := cash.NewCash()
-	services := service.NewService(serverCash)
+	serverFileStorage := fileStorage.NewFileStorage()
+	services := service.NewService(serverCash, serverFileStorage)
 	myHandlers := handlers.NewHandler(services)
 	router := myHandlers.InitRoutes()
 	for _, tt := range tests {
@@ -99,7 +101,12 @@ func TestPingRoute(t *testing.T) {
 			req, _ := http.NewRequest(tt.method, url, strings.NewReader(tt.body))
 			router.ServeHTTP(w, req)
 			res := w.Result()
-			defer res.Body.Close()
+			defer func(Body io.ReadCloser) {
+				err := Body.Close()
+				if err != nil {
+
+				}
+			}(res.Body)
 			// проверяем код ответа
 			assert.Equal(t, tt.want.code, res.StatusCode)
 			switch tt.method {
