@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"github.com/gin-contrib/gzip"
 	"github.com/gin-gonic/gin"
 	"yaGoShortURL/internal/static"
 )
@@ -28,6 +29,7 @@ func NewHandler(service addAndGetURLService, cfg static.ConfigInit) *Handler {
 
 func (h *Handler) InitRoutes() *gin.Engine {
 	router := gin.New()
+	router.Use(gzip.Gzip(gzip.DefaultCompression))
 	shortenerURL := router.Group("/")
 	{
 		shortenerURL.POST("/", h.addURL)
