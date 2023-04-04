@@ -27,8 +27,11 @@ func NewHandler(service addAndGetURLService, cfg static.ConfigInit) *Handler {
 	}
 }
 
+// Middleware
+
+// InitRoutes Хендлеры
 func (h *Handler) InitRoutes() *gin.Engine {
-	router := gin.New()
+	router := gin.Default()
 	shortenerURL := router.Group("/")
 	{
 		shortenerURL.POST("/", h.addURL)
