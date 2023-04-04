@@ -6,7 +6,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
-	"os"
 	"yaGoShortURL/internal/static"
 )
 
@@ -52,6 +51,7 @@ func (a *AddAndGetURLHandler) addAndGetJSON(c *gin.Context) {
 	var myJSON static.JSONApi
 	var result static.JSONRes
 	err := c.ShouldBindJSON(&myJSON)
+	fmt.Println("1111111111111111111111")
 	if err != nil {
 		//c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		c.AbortWithStatus(http.StatusBadRequest)
@@ -70,14 +70,9 @@ func (a *AddAndGetURLHandler) addAndGetJSON(c *gin.Context) {
 		c.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
-	// Получение переменной окружения
-	if baseURL := a.cfg.BaseURL; baseURL != "" {
-		result.Res = fmt.Sprintf("%s%s%s", os.Getenv("BASE_URL"), "/", id)
-		c.JSON(http.StatusCreated, result)
-	} else {
-		result.Res = "http://localhost:8080/" + id
-		c.JSON(http.StatusCreated, result)
-	}
+	// Вывод результата
+	result.Res = fmt.Sprintf("%s%s%s", a.cfg.BaseURL, "/", id)
+	c.JSON(http.StatusCreated, result)
 }
 
 func NewAddAndGetURLHandler(service addAndGetURLService, cfg static.ConfigInit) *AddAndGetURLHandler {
