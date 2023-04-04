@@ -104,7 +104,7 @@ func TestPingRoute(t *testing.T) {
 			defer func(Body io.ReadCloser) {
 				err := Body.Close()
 				if err != nil {
-
+					t.Fatal(err)
 				}
 			}(res.Body)
 			// проверяем код ответа

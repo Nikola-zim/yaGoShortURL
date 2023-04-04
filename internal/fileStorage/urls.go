@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"path/filepath"
+	"runtime"
 )
 
 type UrlsFilesRW struct {
@@ -71,7 +73,16 @@ func NewUrls() (*UrlsFilesRW, error) {
 	//TODO получение переменных окружения
 	var filename string
 	if filename = os.Getenv("FILE_STORAGE_PATH"); filename == "" {
-		filename = "internal/fileStorage/URLStorage.json"
+		//goPath, _ := os.Getwd()
+		//filename = fmt.Sprintf("%s%s", goPath, "/internal/fileStorage/URLStorage.json")
+		//Получим абсолютный путь к модулю
+		_, callerName, _, ok := runtime.Caller(0)
+		if !ok {
+			panic("failed to get caller info")
+		}
+		modulePath := filepath.Dir(callerName)
+		filename = fmt.Sprintf("%s%s", modulePath, "/URLStorage.json")
+
 	}
 	fileToWrite, err := os.OpenFile(filename, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0777)
 	if err != nil {
