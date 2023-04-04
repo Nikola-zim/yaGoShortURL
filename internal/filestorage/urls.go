@@ -82,8 +82,8 @@ func NewUrls(cfg static.ConfigInit) (*UrlsFilesRW, error) {
 	modulePath := filepath.Dir(callerName)
 	filename = fmt.Sprintf("%s%s", modulePath, cfg.FileStoragePath)
 
-	// Для инициализации пути в unit-тестах
-	if cfg.UnitTestFlag {
+	// Для инициализации пути в unit-тестах и использования переменных окружения
+	if cfg.UnitTestFlag || cfg.FileStoragePath != "/URLStorage.json" {
 		filename = cfg.FileStoragePath
 	}
 
