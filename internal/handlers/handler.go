@@ -1,11 +1,8 @@
 package handlers
 
 import (
-	"bytes"
-	"compress/flate"
+	"github.com/gin-contrib/gzip"
 	"github.com/gin-gonic/gin"
-	"io"
-	"log"
 	"yaGoShortURL/internal/static"
 )
 
@@ -32,33 +29,18 @@ func NewHandler(service addAndGetURLService, cfg static.ConfigInit) *Handler {
 
 func (h *Handler) InitRoutes() *gin.Engine {
 	router := gin.New()
-	router.Use(func(c *gin.Context) {
-		if c.Request.Header.Get("Content-Encoding") == "gzip" {
-			// Читаем тело запроса в сжатом формате
-			reader := flate.NewReader(c.Request.Body)
-			defer reader.Close()
-
-			// Заменяем тело запроса на распакованные данные
-			data, err := io.ReadAll(reader)
-			if err != nil {
-				log.Fatal(err)
-			}
-			c.Request.Body = io.NopCloser(bytes.NewBuffer(data))
-
-			// Устанавливаем заголовок Content-Encoding в значение "identity"
-			c.Request.Header.Set("Content-Encoding", "identity")
-		}
-
-		c.Next()
-	})
 	shortenerURL := router.Group("/")
 	{
 		shortenerURL.POST("/", h.addURL)
 		shortenerURL.GET("/:id", h.getURL)
 	}
+	// использование middleware для сжатия запросов
+	shortenerURL.Use(gzip.Gzip(gzip.DefaultCompression))
 	shorten := router.Group("/api/")
 	{
 		shorten.POST("shorten", h.addAndGetJSON)
 	}
+	// использование middleware для сжатия запросов
+	shorten.Use(gzip.Gzip(gzip.DefaultCompression))
 	return router
 }
