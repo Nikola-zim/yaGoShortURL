@@ -1,8 +1,8 @@
 package handlers
 
 import (
-	"github.com/gin-contrib/gzip"
 	"github.com/gin-gonic/gin"
+	"github.com/nanmu42/gzip"
 	"yaGoShortURL/internal/static"
 )
 
@@ -38,12 +38,12 @@ func (h *Handler) InitRoutes() *gin.Engine {
 		shortenerURL.GET("/:id", h.getURL)
 	}
 	// использование middleware для сжатия запросов
-	shortenerURL.Use(gzip.Gzip(gzip.DefaultCompression))
+	shortenerURL.Use(gzip.DefaultHandler().Gin)
 	shorten := router.Group("/api/")
 	{
 		shorten.POST("shorten", h.addAndGetJSON)
 	}
 	// использование middleware для сжатия запросов
-	shorten.Use(gzip.Gzip(gzip.DefaultCompression))
+	shorten.Use(gzip.DefaultHandler().Gin)
 	return router
 }
