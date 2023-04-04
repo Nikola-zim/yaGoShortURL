@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"yaGoShortURL/internal/static"
 )
 
 type UrlsFilesRW struct {
@@ -69,25 +70,31 @@ func (u UrlsFilesRW) CloseFile() error {
 	return nil
 }
 
-func NewUrls() (*UrlsFilesRW, error) {
-	//TODO получение переменных окружения
+func NewUrls(cfg static.ConfigInit) (*UrlsFilesRW, error) {
+	//Получение адреса файла из переменных окружения
 	var filename string
-	if filename = os.Getenv("FILE_STORAGE_PATH"); filename == "" {
-		//goPath, _ := os.Getwd()
-		//filename = fmt.Sprintf("%s%s", goPath, "/internal/filestorage/URLStorage.json")
-		//Получим абсолютный путь к модулю
-		_, callerName, _, ok := runtime.Caller(0)
-		if !ok {
-			panic("failed to get caller info")
-		}
-		modulePath := filepath.Dir(callerName)
-		filename = fmt.Sprintf("%s%s", modulePath, "/URLStorage.json")
 
+	//Получим абсолютный путь к модулю
+	_, callerName, _, ok := runtime.Caller(0)
+	if !ok {
+		panic("failed to get caller info")
 	}
+
+	modulePath := filepath.Dir(callerName)
+	filename = fmt.Sprintf("%s%v", modulePath, cfg.FileStoragePath)
+
+	// Для инициализации пути в unit-тестах
+	if cfg.UnitTestFlag {
+		filename = cfg.FileStoragePath
+	}
+
+	// Открыть файл для записи
 	fileToWrite, err := os.OpenFile(filename, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0777)
 	if err != nil {
 		return nil, err
 	}
+
+	// Открыть файлл для чтения
 	fileToRead, err := os.OpenFile(filename, os.O_RDONLY|os.O_CREATE, 0777)
 	if err != nil {
 		return nil, err

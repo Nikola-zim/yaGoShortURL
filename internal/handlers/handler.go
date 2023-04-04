@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"github.com/gin-gonic/gin"
+	"yaGoShortURL/internal/static"
 )
 
 type addAndGetURL interface {
@@ -19,9 +20,9 @@ type Handler struct {
 	addAndGetURL
 }
 
-func NewHandler(service addAndGetURLService) *Handler {
+func NewHandler(service addAndGetURLService, cfg static.ConfigInit) *Handler {
 	return &Handler{
-		addAndGetURL: NewAddAndGetURLHandler(service),
+		addAndGetURL: NewAddAndGetURLHandler(service, cfg),
 	}
 }
 

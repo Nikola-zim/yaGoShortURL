@@ -1,5 +1,7 @@
 package cash
 
+import "yaGoShortURL/internal/static"
+
 type UrlsRW interface {
 	WriteURLInCash(fullURL string) (string, error)
 	ReadURLFromCash(id string) (string, error)
@@ -7,10 +9,12 @@ type UrlsRW interface {
 
 type Cash struct {
 	UrlsRW
+	cfg static.ConfigInit
 }
 
-func NewCash() *Cash {
+func NewCash(cfg static.ConfigInit) *Cash {
 	return &Cash{
 		UrlsRW: NewUrls(),
+		cfg:    cfg,
 	}
 }

@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"flag"
 	"github.com/caarlos0/env/v6"
 	"log"
 	"os"
@@ -15,12 +16,38 @@ import (
 	"yaGoShortURL/internal/static"
 )
 
+func configInit() static.ConfigInit {
+	//Получение конфигурации из переменных окружения
+	var cfg static.ConfigInit
+	err := env.Parse(&cfg)
+	if err != nil {
+		log.Println(err)
+	}
+	if cfg.ServerAddress == "" {
+		flag.StringVar(&cfg.ServerAddress, "a", "localhost:8080", "Server address with port")
+	}
+	if cfg.BaseURL == "" {
+		flag.StringVar(&cfg.BaseURL, "b", "http://localhost:8080", "Base address with port")
+	}
+	if cfg.FileStoragePath == "" {
+		flag.StringVar(&cfg.FileStoragePath, "f", "/URLStorage.json", "Constant memory file path")
+	}
+	flag.Parse()
+	cfg.UnitTestFlag = false
+	return cfg
+}
+
 func main() {
 
-	serverCash := cash.NewCash()
-	serverFileStorage := filestorage.NewFileStorage()
+	// Конфигурирование сервиса
+	cfg := configInit()
+
+	// Создание экземпляров компоненинтов сервиса
+	serverCash := cash.NewCash(cfg)
+	serverFileStorage := filestorage.NewFileStorage(cfg)
 	services := service.NewService(serverCash, serverFileStorage)
-	myHandlers := handlers.NewHandler(services)
+	myHandlers := handlers.NewHandler(services, cfg)
+
 	//Восстановление кеша
 	err := services.Memory.RecoverAllURL()
 	if err != nil {
@@ -28,12 +55,7 @@ func main() {
 	}
 	//Создание экземпляра сервера
 	srv := new(server.Server)
-	//Получение конфигурации из переменных окружения
-	var cfg static.Config
-	err = env.Parse(&cfg)
-	if err != nil {
-		log.Println(err)
-	}
+
 	go func() {
 		if err := srv.Run(cfg.ServerAddress, myHandlers.InitRoutes()); err != nil {
 			log.Println("Server stopped or error occurred while running http server")

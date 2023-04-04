@@ -86,10 +86,15 @@ func TestPingRoute(t *testing.T) {
 			},
 		},
 	}
-	serverCash := cash.NewCash()
-	serverFileStorage := filestorage.NewFileStorage()
+	// Конфигурирование сервиса
+	cfg := configInit()
+	cfg.UnitTestFlag = true
+	// Создание экземпляров компоненинтов сервиса
+	serverCash := cash.NewCash(cfg)
+	serverFileStorage := filestorage.NewFileStorage(cfg)
 	services := service.NewService(serverCash, serverFileStorage)
-	myHandlers := handlers.NewHandler(services)
+	myHandlers := handlers.NewHandler(services, cfg)
+
 	router := myHandlers.InitRoutes()
 	for _, tt := range tests {
 		// запускаем каждый тест
