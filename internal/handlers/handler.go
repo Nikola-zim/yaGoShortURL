@@ -41,18 +41,17 @@ func gzipHandle() gin.HandlerFunc {
 		// Create a gzip writer
 		reader, err := gzip.NewReader(c.Request.Body)
 		if err != nil {
-			c.AbortWithStatus(http.StatusBadRequest)
+			c.AbortWithStatus(http.StatusInternalServerError)
 			return
 		}
 		defer reader.Close()
 		uncompressed, err := io.ReadAll(reader)
 		if err != nil {
-			c.AbortWithStatus(http.StatusBadRequest)
+			c.AbortWithStatus(http.StatusInternalServerError)
 			return
 		}
 		c.Request.Body = io.NopCloser(strings.NewReader(string(uncompressed)))
 		c.Request.Header.Del("Content-Encoding")
-		c.Request.Header.Set("Content-Type", "application/json")
 	}
 }
 
@@ -60,17 +59,18 @@ func gzipHandle() gin.HandlerFunc {
 func (h *Handler) InitRoutes() *gin.Engine {
 	router := gin.Default()
 	shortenerURL := router.Group("/")
+	// использование middleware для сжатия запросов
+	shortenerURL.Use(gzipHandle())
 	{
 		shortenerURL.POST("/", h.addURL)
 		shortenerURL.GET("/:id", h.getURL)
 	}
-	// использование middleware для сжатия запросов
-	shortenerURL.Use(gzipHandle())
+
 	shorten := router.Group("/api/")
+	// использование middleware для сжатия запросов
+	shorten.Use(gzipHandle())
 	{
 		shorten.POST("shorten", h.addAndGetJSON)
 	}
-	// использование middleware для сжатия запросов
-	shorten.Use(gzipHandle())
 	return router
 }
