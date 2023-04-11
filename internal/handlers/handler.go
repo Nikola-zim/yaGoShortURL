@@ -55,6 +55,9 @@ func gzipHandle() gin.HandlerFunc {
 			}
 			c.Request.Body = io.NopCloser(strings.NewReader(string(uncompressed)))
 			c.Request.Header.Del("Content-Encoding")
+			// Передача запроса в handler
+			c.Next()
+			return
 		}
 		// Accept-Encoding
 		// проверяем, что клиент поддерживает gzip-сжатие
@@ -77,12 +80,13 @@ func gzipHandle() gin.HandlerFunc {
 
 			//Replace the writer with gzip writer
 			c.Writer = &gzipWriter{Writer: gz, ResponseWriter: c.Writer}
+			// Передача запроса в handler
+			c.Next()
+			return
 		}
 		// Передача запроса в handler
 		c.Next()
-		return
 	}
-
 }
 
 // опишем тип gzipWriter, поддерживающий интерфейс http.ResponseWriter, и реализуем недостающие методы.

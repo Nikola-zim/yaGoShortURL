@@ -3,7 +3,6 @@ package main
 import (
 	"github.com/stretchr/testify/assert"
 	"io"
-	"log"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -107,12 +106,7 @@ func TestPingRoute(t *testing.T) {
 			req, _ := http.NewRequest(tt.method, url, strings.NewReader(tt.body))
 			router.ServeHTTP(w, req)
 			res := w.Result()
-			defer func(Body io.ReadCloser) {
-				err := Body.Close()
-				if err != nil {
-					log.Println(err)
-				}
-			}(res.Body)
+			defer res.Body.Close()
 			// проверяем код ответа
 			assert.Equal(t, tt.want.code, res.StatusCode)
 			switch tt.method {

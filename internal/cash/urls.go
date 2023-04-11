@@ -42,7 +42,7 @@ func (u *Urls) WriteURLInCash(fullURL string) (string, error) {
 		return strconv.Itoa(numbOfElements / 2), nil
 	} else {
 
-		return "", errors.New("передаваемая строка не является URL!!!")
+		return "", errors.New("передаваемая строка не является URL")
 	}
 }
 
