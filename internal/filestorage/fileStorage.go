@@ -1,26 +1,26 @@
 package filestorage
 
-import "yaGoShortURL/internal/static"
-
 type UrlsRW interface {
-	WriteURLInFile(fullURL string, id string) error
-	ReadNextURLFromFile() (string, error)
+	WriteURL(fullURL string, id string) error
+	ReadNextURL() (string, error)
 	CloseFile() error
 }
 
 type FileStorage struct {
 	UrlsRW
-	cfg static.ConfigInit
+	unitTestFlag    bool
+	fileStoragePath string
 }
 
-func NewFileStorage(cfg static.ConfigInit) *FileStorage {
+func NewFileStorage(unitTestFlag bool, fileStoragePath string) *FileStorage {
 	//Отлавиливание ошибки при инициализации файлов
-	UrlsRW, err := NewUrls(cfg)
+	UrlsRW, err := NewUrls(unitTestFlag, fileStoragePath)
 	if err != nil {
 		panic(err)
 	}
 	return &FileStorage{
-		UrlsRW: UrlsRW,
-		cfg:    cfg,
+		UrlsRW:          UrlsRW,
+		unitTestFlag:    unitTestFlag,
+		fileStoragePath: fileStoragePath,
 	}
 }

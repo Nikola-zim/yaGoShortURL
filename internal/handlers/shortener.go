@@ -11,7 +11,7 @@ import (
 
 type AddAndGetURLHandler struct {
 	service addAndGetURLService
-	cfg     static.ConfigInit
+	baseURL string
 }
 
 func (a *AddAndGetURLHandler) addURL(c *gin.Context) {
@@ -30,7 +30,7 @@ func (a *AddAndGetURLHandler) addURL(c *gin.Context) {
 		return
 	}
 	// Получение короткого адреса
-	id = fmt.Sprintf("%s%s%s", a.cfg.BaseURL, "/", id)
+	id = fmt.Sprintf("%s%s%s", a.baseURL, "/", id)
 	c.String(http.StatusCreated, id)
 }
 
@@ -70,13 +70,13 @@ func (a *AddAndGetURLHandler) addAndGetJSON(c *gin.Context) {
 		return
 	}
 	// Вывод результата
-	result.Res = fmt.Sprintf("%s%s%s", a.cfg.BaseURL, "/", id)
+	result.Res = fmt.Sprintf("%s%s%s", a.baseURL, "/", id)
 	c.JSON(http.StatusCreated, result)
 }
 
-func NewAddAndGetURLHandler(service addAndGetURLService, cfg static.ConfigInit) *AddAndGetURLHandler {
+func NewAddAndGetURLHandler(service addAndGetURLService, baseURL string) *AddAndGetURLHandler {
 	return &AddAndGetURLHandler{
 		service: service,
-		cfg:     cfg,
+		baseURL: baseURL,
 	}
 }

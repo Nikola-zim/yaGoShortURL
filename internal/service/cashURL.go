@@ -5,7 +5,7 @@ import (
 )
 
 type CashURLService struct {
-	cash      cash.UrlsRW
+	cash      CashURL
 	fileStore FileStoreURL
 }
 
@@ -21,7 +21,7 @@ func (cu *CashURLService) WriteURLInCash(fullURL string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	err = cu.fileStore.WriteURLInFile(fullURL, id)
+	err = cu.fileStore.WriteURL(fullURL, id)
 	if err != nil {
 		return "", err
 	}

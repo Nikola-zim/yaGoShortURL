@@ -5,14 +5,14 @@ import (
 )
 
 type MemoryService struct {
-	cash      cash.UrlsRW
+	cash      CashURL
 	fileStore FileStoreURL
 }
 
 func (m MemoryService) RecoverAllURL() error {
 	for {
 		var nextURL string
-		nextURL, err := m.fileStore.ReadNextURLFromFile()
+		nextURL, err := m.fileStore.ReadNextURL()
 		if err != nil || nextURL == "" {
 			break
 		}
@@ -22,7 +22,6 @@ func (m MemoryService) RecoverAllURL() error {
 		}
 	}
 	return nil
-
 }
 
 func NewMemoryService(cash cash.UrlsRW, fileStore FileStoreURL) *MemoryService {

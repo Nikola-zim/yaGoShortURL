@@ -43,10 +43,10 @@ func main() {
 	cfg := configInit()
 
 	// Создание экземпляров компоненинтов сервиса
-	serverCash := cash.NewCash(cfg)
-	serverFileStorage := filestorage.NewFileStorage(cfg)
+	serverCash := cash.NewCash()
+	serverFileStorage := filestorage.NewFileStorage(cfg.UnitTestFlag, cfg.FileStoragePath)
 	services := service.NewService(serverCash, serverFileStorage)
-	myHandlers := handlers.NewHandler(services, cfg)
+	myHandlers := handlers.NewHandler(services, cfg.BaseURL)
 
 	//Восстановление кеша
 	err := services.Memory.RecoverAllURL()

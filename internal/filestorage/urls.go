@@ -4,10 +4,10 @@ import (
 	"bufio"
 	"encoding/json"
 	"fmt"
+	"log"
 	"os"
 	"path/filepath"
 	"runtime"
-	"yaGoShortURL/internal/static"
 )
 
 type UrlsFilesRW struct {
@@ -17,17 +17,16 @@ type UrlsFilesRW struct {
 	scanner     *bufio.Scanner
 }
 
-func (u UrlsFilesRW) WriteURLInFile(fullURL string, id string) error {
+func (u UrlsFilesRW) WriteURL(fullURL string, id string) error {
 	currentURL := oneURL{
 		ID:      id,
 		FullURL: fullURL,
 	}
-	fmt.Println(currentURL)
 	data, err := json.Marshal(&currentURL)
 	if err != nil {
 		return err
 	}
-	fmt.Println(string(data))
+	log.Println(string(data))
 	// записываем событие в буфер
 	if _, err := u.writer.Write(data); err != nil {
 		return err
@@ -42,7 +41,7 @@ func (u UrlsFilesRW) WriteURLInFile(fullURL string, id string) error {
 	return u.writer.Flush()
 }
 
-func (u UrlsFilesRW) ReadNextURLFromFile() (string, error) {
+func (u UrlsFilesRW) ReadNextURL() (string, error) {
 	if !u.scanner.Scan() {
 		return "", u.scanner.Err()
 	}
@@ -70,7 +69,7 @@ func (u UrlsFilesRW) CloseFile() error {
 	return nil
 }
 
-func NewUrls(cfg static.ConfigInit) (*UrlsFilesRW, error) {
+func NewUrls(unitTestFlag bool, fileStoragePath string) (*UrlsFilesRW, error) {
 	//Получение адреса файла из переменных окружения
 	var filename string
 
@@ -80,11 +79,11 @@ func NewUrls(cfg static.ConfigInit) (*UrlsFilesRW, error) {
 		panic("failed to get caller info")
 	}
 	modulePath := filepath.Dir(callerName)
-	filename = fmt.Sprintf("%s%s", modulePath, cfg.FileStoragePath)
+	filename = fmt.Sprintf("%s%s", modulePath, fileStoragePath)
 
 	// Для инициализации пути в unit-тестах и использования переменных окружения
-	if cfg.UnitTestFlag || cfg.FileStoragePath != "/URLStorage.json" {
-		filename = cfg.FileStoragePath
+	if unitTestFlag || fileStoragePath != "/URLStorage.json" {
+		filename = fileStoragePath
 	}
 
 	// Открыть файл для записи
@@ -93,7 +92,7 @@ func NewUrls(cfg static.ConfigInit) (*UrlsFilesRW, error) {
 		return nil, err
 	}
 
-	// Открыть файлл для чтения
+	// Открыть файл для чтения
 	fileToRead, err := os.OpenFile(filename, os.O_RDONLY|os.O_CREATE, 0777)
 	if err != nil {
 		return nil, err

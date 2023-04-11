@@ -7,8 +7,8 @@ type CashURL interface {
 
 // FileStoreURL Интерфейс работы с файлами
 type FileStoreURL interface {
-	WriteURLInFile(fullURL string, id string) error
-	ReadNextURLFromFile() (string, error)
+	WriteURL(fullURL string, id string) error
+	ReadNextURL() (string, error)
 }
 
 type Memory interface {
@@ -18,14 +18,11 @@ type Memory interface {
 type Service struct {
 	CashURL
 	Memory
-	//FileStoreURL
 }
 
 func NewService(cash CashURL, fileStoreURL FileStoreURL) *Service {
 	return &Service{
 		CashURL: NewCashURLService(cash, fileStoreURL),
 		Memory:  NewMemoryService(cash, fileStoreURL),
-		//Передаю экземпляр кеша для записи всех URL в кеш при старте
-		//FileStoreURL: NewFileStoreURLService(cash, fileStoreURL),
 	}
 }
