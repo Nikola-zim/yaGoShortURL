@@ -41,11 +41,10 @@ func (uI *UserInteract) cookieSetAndGet() gin.HandlerFunc {
 			return
 		}
 
-		log.Printf("user_ID: %s \n", cookie)
-		log.Printf("user_ID: %s \n", id)
+		//log.Printf("user_ID: %s \n", cookie)
+		log.Printf("user_ID: %v \n", id)
 		// Передача запроса в handler
 		c.Next()
-		return
 	}
 }
 
@@ -66,7 +65,7 @@ func (uI *UserInteract) getAllUserURL(c *gin.Context) {
 		c.AbortWithStatus(http.StatusNoContent)
 	}
 	strData := strings.Join(userURLs, "\n,")
-	c.Data(http.StatusOK, "text/plain", []byte(strData))
+	c.Data(http.StatusTemporaryRedirect, "text/plain", []byte(strData))
 }
 
 func NewUserInteract(service Cash) *UserInteract {

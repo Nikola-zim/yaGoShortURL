@@ -16,12 +16,12 @@ type Urls struct {
 	usersUrls map[uint64][]string
 }
 
-func (u *Urls) WriteURLInCash(fullURL string, userIdB []byte) (string, error) {
-	if len(userIdB) != 8 {
-		return "", errors.New("нет userIdB")
+func (u *Urls) WriteURLInCash(fullURL string, userIDB []byte) (string, error) {
+	if len(userIDB) != 8 {
+		return "", errors.New("нет userIDB")
 	}
 	// Получение id в виде числа
-	userId := binary.LittleEndian.Uint64(userIdB)
+	userID := binary.LittleEndian.Uint64(userIDB)
 
 	u.mux.Lock()
 	defer u.mux.Unlock()
@@ -50,16 +50,16 @@ func (u *Urls) WriteURLInCash(fullURL string, userIdB []byte) (string, error) {
 
 		// привязка url к пользователю
 		// проверка, что у этого пользователя уже есть URLs
-		_, ok := u.usersUrls[userId]
+		_, ok := u.usersUrls[userID]
 		if !ok {
 			// Если URL-ов нет, создаем слайс для их id-ков
-			userURLsId := make([]string, 0, 10)
-			userURLsId = append(userURLsId, idKey)
-			u.usersUrls[userId] = userURLsId
+			userURLsID := make([]string, 0, 10)
+			userURLsID = append(userURLsID, idKey)
+			u.usersUrls[userID] = userURLsID
 		} else {
-			userURLs := u.usersUrls[userId]
+			userURLs := u.usersUrls[userID]
 			userURLs = append(userURLs, idKey)
-			u.usersUrls[userId] = userURLs
+			u.usersUrls[userID] = userURLs
 		}
 		return strconv.Itoa(numbOfElements / 2), nil
 	} else {
@@ -81,9 +81,9 @@ func (u *Urls) ReadURLFromCash(id string) (string, error) {
 	return fullURL, nil
 }
 
-func (u *Urls) ReadAllUserURLFromCash(userIdB []byte) ([]string, error) {
+func (u *Urls) ReadAllUserURLFromCash(userIDB []byte) ([]string, error) {
 	// Получение id в виде числа
-	userId := binary.LittleEndian.Uint64(userIdB)
+	userID := binary.LittleEndian.Uint64(userIDB)
 	// Слайс для результата, в нем все URL от User-а
 	userURLs := make([]string, 0, 10)
 
@@ -91,14 +91,14 @@ func (u *Urls) ReadAllUserURLFromCash(userIdB []byte) ([]string, error) {
 	defer u.mux.Unlock()
 
 	// проверка, что у этого пользователя уже есть URLs
-	_, ok := u.usersUrls[userId]
+	_, ok := u.usersUrls[userID]
 	if !ok {
 		// Если URL-ов нет, создаем слайс для их id-ков
 		userURLs = make([]string, 0, 10)
 		return userURLs, nil
 	} else {
-		userURLsId := u.usersUrls[userId]
-		for _, id := range userURLsId {
+		userURLsID := u.usersUrls[userID]
+		for _, id := range userURLsID {
 			fullURL, err := u.urlsMap[id]
 			if !err {
 				return userURLs, errors.New("ошибка чтения из кеша всех URL пользователя: такого ID не существует")

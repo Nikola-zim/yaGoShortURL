@@ -11,12 +11,12 @@ func (cu *CashURLService) ReadAllUserURLFromCash(id []byte) ([]string, error) {
 	return cu.cash.ReadAllUserURLFromCash(id)
 }
 
-func (cu *CashURLService) WriteURLInCash(fullURL string, userIdB []byte) (string, error) {
-	id, err := cu.cash.WriteURLInCash(fullURL, userIdB)
+func (cu *CashURLService) WriteURLInCash(fullURL string, userIDB []byte) (string, error) {
+	id, err := cu.cash.WriteURLInCash(fullURL, userIDB)
 	if err != nil {
 		return "", err
 	}
-	userId := binary.LittleEndian.Uint64(userIdB)
+	userId := binary.LittleEndian.Uint64(userIDB)
 	err = cu.fileStore.WriteURL(fullURL, id, userId)
 	if err != nil {
 		return "", err

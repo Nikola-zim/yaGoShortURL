@@ -10,7 +10,7 @@ import (
 
 type AuthUser struct {
 	users  map[uint64][]byte // ключ - id; значение - ключ(для расшифровки)
-	lastId uint64
+	lastID uint64
 }
 
 func (aU *AuthUser) FindUser(idMsg string) (uint64, bool) {
@@ -41,13 +41,13 @@ func (aU *AuthUser) AddUser() (string, error) {
 		return "", err
 	}
 	// запись в мапу для идентификации
-	aU.users[aU.lastId+1] = secretKey
+	aU.users[aU.lastID+1] = secretKey
 	// подписываем алгоритмом HMAC, используя SHA256
 	h := hmac.New(sha256.New, secretKey)
 	// слайс байт содержащий id (8 байт) и подпись
 	cookieByte := make([]byte, 8)
 	// запись id для куки и для шифровки
-	binary.LittleEndian.PutUint64(cookieByte, aU.lastId+1)
+	binary.LittleEndian.PutUint64(cookieByte, aU.lastID+1)
 	h.Write(cookieByte)
 	dst := h.Sum(nil)
 
@@ -69,6 +69,6 @@ func generateRandom(size int) ([]byte, error) {
 func NewAuthUser() *AuthUser {
 	return &AuthUser{
 		users:  make(map[uint64][]byte),
-		lastId: 0,
+		lastID: 0,
 	}
 }

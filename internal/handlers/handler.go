@@ -15,7 +15,7 @@ type addAndGetURL interface {
 }
 
 type addAndGetURLService interface {
-	WriteURLInCash(fullURL string, userIdB []byte) (string, error)
+	WriteURLInCash(fullURL string, userIDB []byte) (string, error)
 	ReadURLFromCash(id string) (string, error)
 	ReadAllUserURLFromCash(id []byte) ([]string, error)
 }

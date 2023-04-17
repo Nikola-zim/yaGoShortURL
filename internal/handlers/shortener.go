@@ -25,7 +25,7 @@ func (a *AddAndGetURLHandler) addURL(c *gin.Context) {
 	}
 	//Запись в кеш
 	// Получение userIdB
-	cookie, err := c.Cookie("user_id")
+	cookie, _ := c.Cookie("user_id")
 	data, err := hex.DecodeString(cookie)
 	if err != nil {
 		c.AbortWithStatus(http.StatusInternalServerError)
