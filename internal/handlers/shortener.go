@@ -72,7 +72,6 @@ func (a *AddAndGetURLHandler) addAndGetJSON(c *gin.Context) {
 	var result static.JSONRes
 	err := c.ShouldBindJSON(&myJSON)
 	if err != nil {
-		//c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		c.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
@@ -82,8 +81,25 @@ func (a *AddAndGetURLHandler) addAndGetJSON(c *gin.Context) {
 	if err != nil {
 		fmt.Println(err)
 	}
+
+	// Получение userIdB
+	cookie, _ := c.Cookie("user_id")
+	data, err := hex.DecodeString(cookie)
+	userID := c.MustGet("user_ID")
+	switch t := userID.(type) {
+	case uint64:
+		ID := reflect.ValueOf(t).Uint()
+		//Если UserID был установлен, т.е. кука была только получена
+		if userID != 0 {
+			data = make([]byte, 8)
+			binary.LittleEndian.PutUint64(data, ID)
+		}
+	}
+	if err != nil && userID == 0 {
+		c.AbortWithStatus(http.StatusInternalServerError)
+	}
 	//Запись в кеш
-	id, err := a.service.WriteURLInCash(myJSON.URL, nil)
+	id, err := a.service.WriteURLInCash(myJSON.URL, data[:8])
 	if err != nil {
 		log.Println(err)
 		c.AbortWithStatus(http.StatusBadRequest)
