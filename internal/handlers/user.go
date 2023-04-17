@@ -56,7 +56,7 @@ func (uI *UserInteract) getAllUserURL(c *gin.Context) {
 	/// Получение userIdB
 	cookie, err := c.Cookie("user_id")
 	data := make([]byte, 8, 39)
-	// Ошибка означает что куки небыло, и нужно взять ID, который установили в запросе
+	// Ошибка означает, что куки небыло, и нужно взять ID, который установили в запросе
 	if err != nil {
 		userID, _ := c.Get("user_ID")
 		switch t := userID.(type) {

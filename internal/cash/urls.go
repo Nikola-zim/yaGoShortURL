@@ -48,6 +48,7 @@ func (u *Urls) WriteURLInCash(fullURL string, userIDB []byte) (string, error) {
 		}
 		//Текущий индекс (для сокращенного URL)
 		currentID := numbOfElements / 2
+
 		//Запись в map после проверок
 		//Форматирование ключей
 		idKey := "id:" + strconv.Itoa(currentID)
@@ -60,6 +61,7 @@ func (u *Urls) WriteURLInCash(fullURL string, userIDB []byte) (string, error) {
 			FullURL: fullURL,
 			BaseURL: baseURL,
 		}
+
 		// привязка url к пользователю
 		// проверка, что у этого пользователя уже есть URLs
 		_, ok := u.usersUrls[userID]

@@ -41,6 +41,7 @@ func (aU *AuthUser) AddUser() (string, uint64, error) {
 		return "", 0, err
 	}
 	currentUserID := aU.lastID + 1
+	aU.lastID = currentUserID
 	// запись в мапу для идентификации
 	aU.users[currentUserID] = secretKey
 	// подписываем алгоритмом HMAC, используя SHA256
