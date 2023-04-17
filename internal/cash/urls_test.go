@@ -3,6 +3,7 @@ package cash
 import (
 	"encoding/binary"
 	"testing"
+	"yaGoShortURL/internal/static"
 )
 
 func TestUrls_ReadURLFromCash(t *testing.T) {
@@ -84,8 +85,10 @@ func TestUrls_ReadURLFromCash(t *testing.T) {
 
 func TestUrls_WriteURLInCash(t *testing.T) {
 	type fields struct {
-		urlsMap   map[string]string
-		usersUrls map[uint64][]string
+		urlsMap     map[string]string
+		usersUrls   map[uint64][]string
+		URLsAllInfo map[string]static.JSONAllInfo
+		baseURL     string
 	}
 	type args struct {
 		fullURL string
@@ -101,8 +104,10 @@ func TestUrls_WriteURLInCash(t *testing.T) {
 		{
 			name: "positiveWrite0",
 			fields: fields{
-				urlsMap:   map[string]string{},
-				usersUrls: map[uint64][]string{},
+				urlsMap:     map[string]string{},
+				usersUrls:   map[uint64][]string{},
+				URLsAllInfo: map[string]static.JSONAllInfo{},
+				baseURL:     "http://localhost:8080",
 			},
 			args: args{
 				fullURL: "https://golang-blog.blogspot.com/2020/01/map-golang.html",
@@ -118,7 +123,9 @@ func TestUrls_WriteURLInCash(t *testing.T) {
 					"id:0": "https://golang-blog.blogspot.com/2020/01/map-golang.html",
 					"url:https://golang-blog.blogspot.com/2020/01/map-golang.html": "https://golang-blog.blogspot.com/2020/01/map-golang.html",
 				},
-				usersUrls: map[uint64][]string{},
+				usersUrls:   map[uint64][]string{},
+				URLsAllInfo: map[string]static.JSONAllInfo{},
+				baseURL:     "http://localhost:8080",
 			},
 			args: args{
 				fullURL: "https://blog.mozilla.org/en/",
@@ -134,7 +141,9 @@ func TestUrls_WriteURLInCash(t *testing.T) {
 					"id:0": "https://golang-blog.blogspot.com/2020/01/map-golang.html",
 					"url:https://golang-blog.blogspot.com/2020/01/map-golang.html": "https://golang-blog.blogspot.com/2020/01/map-golang.html",
 				},
-				usersUrls: map[uint64][]string{},
+				usersUrls:   map[uint64][]string{},
+				URLsAllInfo: map[string]static.JSONAllInfo{},
+				baseURL:     "http://localhost:8080",
 			},
 			args: args{
 				fullURL: "https://golang-blog.blogspot.com/2020/01/map-golang.html",
@@ -150,7 +159,9 @@ func TestUrls_WriteURLInCash(t *testing.T) {
 					"id:0": "https://golang-blog.blogspot.com/2020/01/map-golang.html",
 					"url:https://golang-blog.blogspot.com/2020/01/map-golang.html": "https://golang-blog.blogspot.com/2020/01/map-golang.html",
 				},
-				usersUrls: map[uint64][]string{},
+				usersUrls:   map[uint64][]string{},
+				URLsAllInfo: map[string]static.JSONAllInfo{},
+				baseURL:     "http://localhost:8080",
 			},
 			args: args{
 				fullURL: "",
@@ -166,7 +177,9 @@ func TestUrls_WriteURLInCash(t *testing.T) {
 					"id:0": "https://golang-blog.blogspot.com/2020/01/map-golang.html",
 					"url:https://golang-blog.blogspot.com/2020/01/map-golang.html": "https://golang-blog.blogspot.com/2020/01/map-golang.html",
 				},
-				usersUrls: map[uint64][]string{},
+				usersUrls:   map[uint64][]string{},
+				URLsAllInfo: map[string]static.JSONAllInfo{},
+				baseURL:     "http://localhost:8080",
 			},
 			args: args{
 				fullURL: "qwer",
@@ -179,8 +192,10 @@ func TestUrls_WriteURLInCash(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			u := &Urls{
-				urlsMap:   tt.fields.urlsMap,
-				usersUrls: tt.fields.usersUrls,
+				urlsMap:     tt.fields.urlsMap,
+				usersUrls:   tt.fields.usersUrls,
+				URLsAllInfo: tt.fields.URLsAllInfo,
+				baseURL:     tt.fields.baseURL,
 			}
 			userIDB := make([]byte, 8)
 			binary.LittleEndian.PutUint64(userIDB, tt.args.userID)
