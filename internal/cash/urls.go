@@ -113,7 +113,6 @@ func (u *Urls) ReadAllUserURLFromCash(userIDB []byte) ([]string, error) {
 }
 
 func NewUrls() *Urls {
-
 	return &Urls{
 		urlsMap:   make(map[string]string),
 		usersUrls: make(map[uint64][]string),

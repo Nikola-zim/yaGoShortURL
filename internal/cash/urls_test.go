@@ -84,7 +84,8 @@ func TestUrls_ReadURLFromCash(t *testing.T) {
 
 func TestUrls_WriteURLInCash(t *testing.T) {
 	type fields struct {
-		urlsMap map[string]string
+		urlsMap   map[string]string
+		usersUrls map[uint64][]string
 	}
 	type args struct {
 		fullURL string
@@ -100,7 +101,8 @@ func TestUrls_WriteURLInCash(t *testing.T) {
 		{
 			name: "positiveWrite0",
 			fields: fields{
-				urlsMap: map[string]string{},
+				urlsMap:   map[string]string{},
+				usersUrls: map[uint64][]string{},
 			},
 			args: args{
 				fullURL: "https://golang-blog.blogspot.com/2020/01/map-golang.html",
@@ -116,6 +118,7 @@ func TestUrls_WriteURLInCash(t *testing.T) {
 					"id:0": "https://golang-blog.blogspot.com/2020/01/map-golang.html",
 					"url:https://golang-blog.blogspot.com/2020/01/map-golang.html": "https://golang-blog.blogspot.com/2020/01/map-golang.html",
 				},
+				usersUrls: map[uint64][]string{},
 			},
 			args: args{
 				fullURL: "https://blog.mozilla.org/en/",
@@ -131,6 +134,7 @@ func TestUrls_WriteURLInCash(t *testing.T) {
 					"id:0": "https://golang-blog.blogspot.com/2020/01/map-golang.html",
 					"url:https://golang-blog.blogspot.com/2020/01/map-golang.html": "https://golang-blog.blogspot.com/2020/01/map-golang.html",
 				},
+				usersUrls: map[uint64][]string{},
 			},
 			args: args{
 				fullURL: "https://golang-blog.blogspot.com/2020/01/map-golang.html",
@@ -146,6 +150,7 @@ func TestUrls_WriteURLInCash(t *testing.T) {
 					"id:0": "https://golang-blog.blogspot.com/2020/01/map-golang.html",
 					"url:https://golang-blog.blogspot.com/2020/01/map-golang.html": "https://golang-blog.blogspot.com/2020/01/map-golang.html",
 				},
+				usersUrls: map[uint64][]string{},
 			},
 			args: args{
 				fullURL: "",
@@ -161,6 +166,7 @@ func TestUrls_WriteURLInCash(t *testing.T) {
 					"id:0": "https://golang-blog.blogspot.com/2020/01/map-golang.html",
 					"url:https://golang-blog.blogspot.com/2020/01/map-golang.html": "https://golang-blog.blogspot.com/2020/01/map-golang.html",
 				},
+				usersUrls: map[uint64][]string{},
 			},
 			args: args{
 				fullURL: "qwer",
