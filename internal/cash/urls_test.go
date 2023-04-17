@@ -179,7 +179,8 @@ func TestUrls_WriteURLInCash(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			u := &Urls{
-				urlsMap: tt.fields.urlsMap,
+				urlsMap:   tt.fields.urlsMap,
+				usersUrls: tt.fields.usersUrls,
 			}
 			userIDB := make([]byte, 8)
 			binary.LittleEndian.PutUint64(userIDB, tt.args.userID)
