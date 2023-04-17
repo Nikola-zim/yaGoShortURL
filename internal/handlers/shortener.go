@@ -27,21 +27,27 @@ func (a *AddAndGetURLHandler) addURL(c *gin.Context) {
 	}
 	//Запись в кеш
 	// Получение userIdB
-	cookie, _ := c.Cookie("user_id")
-	data, err := hex.DecodeString(cookie)
-	userID := c.MustGet("user_ID")
-	switch t := userID.(type) {
-	case uint64:
-		ID := reflect.ValueOf(t).Uint()
-		//Если UserID был установлен, т.е. кука была только получена
-		if userID != 0 {
-			data = make([]byte, 8)
-			binary.LittleEndian.PutUint64(data, ID)
+	cookie, err := c.Cookie("user_id")
+	data := make([]byte, 8, 39)
+	// Ошибка означает что куки небыло, и нужно взять ID, который установили в запросе
+	if err != nil {
+		userID, _ := c.Get("user_ID")
+		switch t := userID.(type) {
+		case uint64:
+			ID := reflect.ValueOf(t).Uint()
+			//Если UserID был установлен, т.е. кука была только получена
+			if userID != 0 {
+				data = make([]byte, 8)
+				binary.LittleEndian.PutUint64(data, ID)
+			}
+		}
+	} else {
+		data, err = hex.DecodeString(cookie)
+		if err != nil {
+			c.AbortWithStatus(http.StatusInternalServerError)
 		}
 	}
-	if err != nil && userID == 0 {
-		c.AbortWithStatus(http.StatusInternalServerError)
-	}
+
 	// data[:8] - байты id-шника
 	id, err := a.service.WriteURLInCash(string(b), data[:8])
 	if err != nil {
@@ -83,20 +89,25 @@ func (a *AddAndGetURLHandler) addAndGetJSON(c *gin.Context) {
 	}
 
 	// Получение userIdB
-	cookie, _ := c.Cookie("user_id")
-	data, err := hex.DecodeString(cookie)
-	userID := c.MustGet("user_ID")
-	switch t := userID.(type) {
-	case uint64:
-		ID := reflect.ValueOf(t).Uint()
-		//Если UserID был установлен, т.е. кука была только получена
-		if userID != 0 {
-			data = make([]byte, 8)
-			binary.LittleEndian.PutUint64(data, ID)
+	cookie, err := c.Cookie("user_id")
+	data := make([]byte, 8, 39)
+	// Ошибка означает что куки небыло, и нужно взять ID, который установили в запросе
+	if err != nil {
+		userID, _ := c.Get("user_ID")
+		switch t := userID.(type) {
+		case uint64:
+			ID := reflect.ValueOf(t).Uint()
+			//Если UserID был установлен, т.е. кука была только получена
+			if userID != 0 {
+				data = make([]byte, 8)
+				binary.LittleEndian.PutUint64(data, ID)
+			}
 		}
-	}
-	if err != nil && userID == 0 {
-		c.AbortWithStatus(http.StatusInternalServerError)
+	} else {
+		data, err = hex.DecodeString(cookie)
+		if err != nil {
+			c.AbortWithStatus(http.StatusInternalServerError)
+		}
 	}
 	//Запись в кеш
 	id, err := a.service.WriteURLInCash(myJSON.URL, data[:8])
