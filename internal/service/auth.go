@@ -10,10 +10,10 @@ func (aS *AuthService) FindUser(idMsg string) (uint64, bool) {
 	return aS.authCash.FindUser(idMsg)
 }
 
-func (aS *AuthService) AddUser() (string, error) {
+func (aS *AuthService) AddUser() (string, uint64, error) {
 	log.Println("In service")
-	cookie, err := aS.authCash.AddUser()
-	return cookie, err
+	cookie, id, err := aS.authCash.AddUser()
+	return cookie, id, err
 }
 
 func NewAuthService(authCash AuthUser) *AuthService {

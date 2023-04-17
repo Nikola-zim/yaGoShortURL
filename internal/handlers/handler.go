@@ -22,7 +22,7 @@ type addAndGetURLService interface {
 
 type authUser interface {
 	FindUser(idMsg string) (uint64, bool)
-	AddUser() (string, error)
+	AddUser() (string, uint64, error)
 }
 
 // Cash Собранный интерфейс для кэша

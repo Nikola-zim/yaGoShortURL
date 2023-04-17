@@ -8,7 +8,7 @@ type UrlsRW interface {
 
 type userGetAdd interface {
 	FindUser(idMsg string) (uint64, bool)
-	AddUser() (string, error)
+	AddUser() (string, uint64, error)
 }
 
 type Cash struct {

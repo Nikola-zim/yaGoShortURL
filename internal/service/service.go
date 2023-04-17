@@ -9,7 +9,7 @@ type CashURL interface {
 
 type AuthUser interface {
 	FindUser(idMsg string) (uint64, bool)
-	AddUser() (string, error)
+	AddUser() (string, uint64, error)
 }
 
 // Cash Собранный интерфейс для кэша

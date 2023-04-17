@@ -18,12 +18,14 @@ func (uI *UserInteract) cookieSetAndGet() gin.HandlerFunc {
 		cookie, err := c.Cookie("user_id")
 		if err != nil {
 			// Добавим юзера
-			cookie, err = uI.service.AddUser()
+			cookie, id, err := uI.service.AddUser()
 			if err != nil {
 				return
 			}
 			//Устанавливаем куку
 			c.SetCookie("user_id", cookie, 3600, "/", "localhost", false, true)
+			// переброска данных далее в запрос
+			c.Set("user_ID", id)
 			c.Next()
 			return
 		}
@@ -31,12 +33,13 @@ func (uI *UserInteract) cookieSetAndGet() gin.HandlerFunc {
 		id, ok := uI.service.FindUser(cookie)
 		if !ok {
 			// Добавим юзера
-			cookie, err = uI.service.AddUser()
+			cookie, id, err = uI.service.AddUser()
 			if err != nil {
 				return
 			}
 			//Устанавливаем куку
 			c.SetCookie("user_id", cookie, 3600, "/", "localhost", false, true)
+			c.Set("user_ID", id)
 			c.Next()
 			return
 		}
@@ -50,7 +53,7 @@ func (uI *UserInteract) cookieSetAndGet() gin.HandlerFunc {
 
 func (uI *UserInteract) getAllUserURL(c *gin.Context) {
 	// Получение userIdB
-	cookie, err := c.Cookie("user_id")
+	cookie, _ := c.Cookie("user_id")
 	data, err := hex.DecodeString(cookie)
 	if err != nil {
 		c.AbortWithStatus(http.StatusInternalServerError)

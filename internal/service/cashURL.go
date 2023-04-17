@@ -16,8 +16,8 @@ func (cu *CashURLService) WriteURLInCash(fullURL string, userIDB []byte) (string
 	if err != nil {
 		return "", err
 	}
-	userId := binary.LittleEndian.Uint64(userIDB)
-	err = cu.fileStore.WriteURL(fullURL, id, userId)
+	userID := binary.LittleEndian.Uint64(userIDB)
+	err = cu.fileStore.WriteURL(fullURL, id, userID)
 	if err != nil {
 		return "", err
 	}

@@ -1,12 +1,14 @@
 package handlers
 
 import (
+	"encoding/binary"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
+	"reflect"
 	"yaGoShortURL/internal/static"
 )
 
@@ -27,7 +29,17 @@ func (a *AddAndGetURLHandler) addURL(c *gin.Context) {
 	// Получение userIdB
 	cookie, _ := c.Cookie("user_id")
 	data, err := hex.DecodeString(cookie)
-	if err != nil {
+	userID := c.MustGet("user_ID")
+	switch t := userID.(type) {
+	case uint64:
+		ID := reflect.ValueOf(t).Uint()
+		//Если UserID был установлен, т.е. кука была только получена
+		if userID != 0 {
+			data = make([]byte, 8)
+			binary.LittleEndian.PutUint64(data, ID)
+		}
+	}
+	if err != nil && userID == 0 {
 		c.AbortWithStatus(http.StatusInternalServerError)
 	}
 	// data[:8] - байты id-шника
