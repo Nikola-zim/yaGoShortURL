@@ -49,7 +49,7 @@ func main() {
 	myHandlers := handlers.NewHandler(services, cfg.BaseURL)
 
 	//Восстановление кеша
-	err := services.Memory.RecoverAllURL()
+	err := services.MemoryService.RecoverAllURL()
 	if err != nil {
 		log.Println(err)
 	}

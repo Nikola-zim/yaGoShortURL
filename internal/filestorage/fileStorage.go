@@ -1,8 +1,8 @@
 package filestorage
 
 type UrlsRW interface {
-	WriteURL(fullURL string, id string) error
-	ReadNextURL() (string, error)
+	WriteURL(fullURL string, id string, userID uint64) error
+	ReadNextURL() (string, uint64, error)
 	CloseFile() error
 }
 

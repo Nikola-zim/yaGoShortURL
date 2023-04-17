@@ -17,10 +17,11 @@ type UrlsFilesRW struct {
 	scanner     *bufio.Scanner
 }
 
-func (u UrlsFilesRW) WriteURL(fullURL string, id string) error {
+func (u UrlsFilesRW) WriteURL(fullURL string, id string, userID uint64) error {
 	currentURL := oneURL{
 		ID:      id,
 		FullURL: fullURL,
+		UserID:  userID,
 	}
 	data, err := json.Marshal(&currentURL)
 	if err != nil {
@@ -41,9 +42,9 @@ func (u UrlsFilesRW) WriteURL(fullURL string, id string) error {
 	return u.writer.Flush()
 }
 
-func (u UrlsFilesRW) ReadNextURL() (string, error) {
+func (u UrlsFilesRW) ReadNextURL() (string, uint64, error) {
 	if !u.scanner.Scan() {
-		return "", u.scanner.Err()
+		return "", 0, u.scanner.Err()
 	}
 	// читаем данные из scanner
 	data := u.scanner.Bytes()
@@ -51,10 +52,10 @@ func (u UrlsFilesRW) ReadNextURL() (string, error) {
 	event := oneURL{}
 	err := json.Unmarshal(data, &event)
 	if err != nil {
-		return "", err
+		return "", 0, err
 	}
 
-	return event.FullURL, nil
+	return event.FullURL, event.UserID, nil
 }
 
 func (u UrlsFilesRW) CloseFile() error {
@@ -111,4 +112,5 @@ func NewUrls(unitTestFlag bool, fileStoragePath string) (*UrlsFilesRW, error) {
 type oneURL struct {
 	ID      string
 	FullURL string
+	UserID  uint64
 }

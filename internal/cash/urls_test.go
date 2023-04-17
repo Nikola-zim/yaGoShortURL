@@ -1,6 +1,7 @@
 package cash
 
 import (
+	"encoding/binary"
 	"testing"
 )
 
@@ -87,6 +88,7 @@ func TestUrls_WriteURLInCash(t *testing.T) {
 	}
 	type args struct {
 		fullURL string
+		userID  uint64
 	}
 	tests := []struct {
 		name    string
@@ -102,6 +104,7 @@ func TestUrls_WriteURLInCash(t *testing.T) {
 			},
 			args: args{
 				fullURL: "https://golang-blog.blogspot.com/2020/01/map-golang.html",
+				userID:  15,
 			},
 			want:    "0",
 			wantErr: false,
@@ -116,6 +119,7 @@ func TestUrls_WriteURLInCash(t *testing.T) {
 			},
 			args: args{
 				fullURL: "https://blog.mozilla.org/en/",
+				userID:  15,
 			},
 			want:    "1",
 			wantErr: false,
@@ -130,6 +134,7 @@ func TestUrls_WriteURLInCash(t *testing.T) {
 			},
 			args: args{
 				fullURL: "https://golang-blog.blogspot.com/2020/01/map-golang.html",
+				userID:  15,
 			},
 			want:    "",
 			wantErr: true,
@@ -144,6 +149,7 @@ func TestUrls_WriteURLInCash(t *testing.T) {
 			},
 			args: args{
 				fullURL: "",
+				userID:  15,
 			},
 			want:    "",
 			wantErr: true,
@@ -158,6 +164,7 @@ func TestUrls_WriteURLInCash(t *testing.T) {
 			},
 			args: args{
 				fullURL: "qwer",
+				userID:  15,
 			},
 			want:    "",
 			wantErr: true,
@@ -168,7 +175,9 @@ func TestUrls_WriteURLInCash(t *testing.T) {
 			u := &Urls{
 				urlsMap: tt.fields.urlsMap,
 			}
-			got, err := u.WriteURLInCash(tt.args.fullURL)
+			userIDB := make([]byte, 8)
+			binary.LittleEndian.PutUint64(userIDB, tt.args.userID)
+			got, err := u.WriteURLInCash(tt.args.fullURL, userIDB)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("WriteURLInCash() error = %v, wantErr %v", err, tt.wantErr)
 				return

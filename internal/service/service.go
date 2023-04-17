@@ -1,14 +1,27 @@
 package service
 
+// CashURL интерфейс работы с кэшем
 type CashURL interface {
-	WriteURLInCash(fullURL string) (string, error)
+	WriteURLInCash(fullURL string, userIdB []byte) (string, error)
 	ReadURLFromCash(id string) (string, error)
+	ReadAllUserURLFromCash(id []byte) ([]string, error)
 }
 
-// FileStoreURL Интерфейс работы с файлами
+type AuthUser interface {
+	FindUser(idMsg string) (uint64, bool)
+	AddUser() (string, error)
+}
+
+// Cash Собранный интерфейс для кэша
+type Cash interface {
+	CashURL
+	AuthUser
+}
+
+// FileStoreURL интерфейс работы с файлами
 type FileStoreURL interface {
-	WriteURL(fullURL string, id string) error
-	ReadNextURL() (string, error)
+	WriteURL(fullURL string, id string, userID uint64) error
+	ReadNextURL() (string, uint64, error)
 }
 
 type Memory interface {
@@ -16,13 +29,15 @@ type Memory interface {
 }
 
 type Service struct {
-	CashURL
-	Memory
+	CashURLService
+	MemoryService
+	AuthService
 }
 
-func NewService(cash CashURL, fileStoreURL FileStoreURL) *Service {
+func NewService(cash Cash, fileStoreURL FileStoreURL) *Service {
 	return &Service{
-		CashURL: NewCashURLService(cash, fileStoreURL),
-		Memory:  NewMemoryService(cash, fileStoreURL),
+		CashURLService: *NewCashURLService(cash, fileStoreURL),
+		MemoryService:  *NewMemoryService(cash, fileStoreURL),
+		AuthService:    *NewAuthService(cash),
 	}
 }

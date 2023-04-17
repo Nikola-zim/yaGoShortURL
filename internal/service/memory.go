@@ -1,8 +1,6 @@
 package service
 
-import (
-	"yaGoShortURL/internal/cash"
-)
+import "encoding/binary"
 
 type MemoryService struct {
 	cash      CashURL
@@ -12,11 +10,13 @@ type MemoryService struct {
 func (m MemoryService) RecoverAllURL() error {
 	for {
 		var nextURL string
-		nextURL, err := m.fileStore.ReadNextURL()
+		nextURL, userID, err := m.fileStore.ReadNextURL()
 		if err != nil || nextURL == "" {
 			break
 		}
-		_, err = m.cash.WriteURLInCash(nextURL)
+		userIDB := make([]byte, 8)
+		binary.LittleEndian.PutUint64(userIDB, userID)
+		_, err = m.cash.WriteURLInCash(nextURL, userIDB)
 		if err != nil {
 			return err
 		}
@@ -24,7 +24,7 @@ func (m MemoryService) RecoverAllURL() error {
 	return nil
 }
 
-func NewMemoryService(cash cash.UrlsRW, fileStore FileStoreURL) *MemoryService {
+func NewMemoryService(cash CashURL, fileStore FileStoreURL) *MemoryService {
 	return &MemoryService{
 		cash:      cash,
 		fileStore: fileStore,

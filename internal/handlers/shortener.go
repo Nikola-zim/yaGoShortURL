@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
@@ -23,7 +24,14 @@ func (a *AddAndGetURLHandler) addURL(c *gin.Context) {
 		return
 	}
 	//Запись в кеш
-	id, err := a.service.WriteURLInCash(string(b))
+	// Получение userIdB
+	cookie, err := c.Cookie("user_id")
+	data, err := hex.DecodeString(cookie)
+	if err != nil {
+		c.AbortWithStatus(http.StatusInternalServerError)
+	}
+	// data[:8] - байты id-шника
+	id, err := a.service.WriteURLInCash(string(b), data[:8])
 	if err != nil {
 		log.Println(err)
 		c.AbortWithStatus(http.StatusBadRequest)
@@ -58,12 +66,12 @@ func (a *AddAndGetURLHandler) addAndGetJSON(c *gin.Context) {
 	}
 	//это для прохождение проверки использования unmarshal
 	b, err := c.GetRawData()
-	fmt.Println(json.Unmarshal(b, &result))
+	log.Println(json.Unmarshal(b, &result))
 	if err != nil {
 		fmt.Println(err)
 	}
 	//Запись в кеш
-	id, err := a.service.WriteURLInCash(myJSON.URL)
+	id, err := a.service.WriteURLInCash(myJSON.URL, nil)
 	if err != nil {
 		log.Println(err)
 		c.AbortWithStatus(http.StatusBadRequest)

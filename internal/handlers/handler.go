@@ -3,7 +3,6 @@ package handlers
 import (
 	"compress/gzip"
 	"github.com/gin-gonic/gin"
-	"io"
 	"log"
 	"net/http"
 	"strings"
@@ -16,21 +15,41 @@ type addAndGetURL interface {
 }
 
 type addAndGetURLService interface {
-	WriteURLInCash(string2 string) (string, error)
-	ReadURLFromCash(string string) (string, error)
+	WriteURLInCash(fullURL string, userIdB []byte) (string, error)
+	ReadURLFromCash(id string) (string, error)
+	ReadAllUserURLFromCash(id []byte) ([]string, error)
+}
+
+type authUser interface {
+	FindUser(idMsg string) (uint64, bool)
+	AddUser() (string, error)
+}
+
+// Cash Собранный интерфейс для кэша
+type Cash interface {
+	addAndGetURLService
+	authUser
+}
+
+// Добавление id пользователя (запись кук)
+type authorizationService interface {
+	AddUser() (string, error)
+	FindUser()
 }
 
 type Handler struct {
 	addAndGetURL
+	UserInteract
 }
 
-func NewHandler(service addAndGetURLService, baseURL string) *Handler {
+func NewHandler(service Cash, baseURL string) *Handler {
 	return &Handler{
 		addAndGetURL: NewAddAndGetURLHandler(service, baseURL),
+		UserInteract: *NewUserInteract(service),
 	}
 }
 
-// Middleware
+// Middleware для сжатия запросов и ответов
 func gzipHandle() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// Content-Encoding
@@ -48,12 +67,7 @@ func gzipHandle() gin.HandlerFunc {
 					log.Println(err)
 				}
 			}(reader)
-			uncompressed, err := io.ReadAll(reader)
-			if err != nil {
-				c.AbortWithStatus(http.StatusInternalServerError)
-				return
-			}
-			c.Request.Body = io.NopCloser(strings.NewReader(string(uncompressed)))
+			c.Request.Body = reader
 			c.Request.Header.Del("Content-Encoding")
 			// Передача запроса в handler
 			c.Next()
@@ -74,7 +88,6 @@ func gzipHandle() gin.HandlerFunc {
 					log.Println(err)
 				}
 			}(gz)
-
 			//Set the Content-Encoding header
 			c.Header("Content-Encoding", "gzip")
 
@@ -118,6 +131,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 	shortenerURL := router.Group("/")
 	// использование middleware для сжатия запросов
 	shortenerURL.Use(gzipHandle())
+	shortenerURL.Use(h.cookieSetAndGet())
 	{
 		shortenerURL.POST("/", h.addURL)
 		shortenerURL.GET("/:id", h.getURL)
@@ -126,8 +140,18 @@ func (h *Handler) InitRoutes() *gin.Engine {
 	shorten := router.Group("/api/")
 	// использование middleware для сжатия запросов
 	shorten.Use(gzipHandle())
+	shorten.Use(h.cookieSetAndGet())
 	{
 		shorten.POST("shorten", h.addAndGetJSON)
+	}
+
+	// ручка для получения всех URL
+	getAllURL := router.Group("api/user/")
+	// использование middleware для сжатия запросов
+	getAllURL.Use(gzipHandle())
+	getAllURL.Use(h.cookieSetAndGet())
+	{
+		getAllURL.GET("urls", h.getAllUserURL)
 	}
 	return router
 }

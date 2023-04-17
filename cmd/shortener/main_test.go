@@ -88,7 +88,7 @@ func TestPingRoute(t *testing.T) {
 	}
 	// Конфигурирование сервиса
 	cfg := configInit()
-	cfg.UnitTestFlag = true
+	cfg.UnitTestFlag = false
 	// Создание экземпляров компоненинтов сервиса
 	serverCash := cash.NewCash()
 	serverFileStorage := filestorage.NewFileStorage(cfg.UnitTestFlag, cfg.FileStoragePath)
@@ -96,6 +96,11 @@ func TestPingRoute(t *testing.T) {
 	myHandlers := handlers.NewHandler(services, cfg.BaseURL)
 
 	router := myHandlers.InitRoutes()
+
+	_, err := http.NewRequest("GET", "/", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
 	for _, tt := range tests {
 		// запускаем каждый тест
 		t.Run(tt.name, func(t *testing.T) {
