@@ -7,3 +7,8 @@ type JSONApi struct {
 type JSONRes struct {
 	Res string `json:"result"`
 }
+
+type JSONAllInfo struct {
+	BaseURL string `json:"short_url"`
+	FullURL string `json:"original_url"`
+}

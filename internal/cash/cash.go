@@ -1,9 +1,11 @@
 package cash
 
+import "yaGoShortURL/internal/static"
+
 type UrlsRW interface {
 	WriteURLInCash(fullURL string, id []byte) (string, error)
 	ReadURLFromCash(id string) (string, error)
-	ReadAllUserURLFromCash(id []byte) ([]string, error)
+	ReadAllUserURLFromCash(id []byte) ([]static.JSONAllInfo, error)
 }
 
 type userGetAdd interface {
@@ -16,9 +18,9 @@ type Cash struct {
 	userGetAdd
 }
 
-func NewCash() *Cash {
+func NewCash(baseURL string) *Cash {
 	return &Cash{
-		UrlsRW:     NewUrls(),
+		UrlsRW:     NewUrls(baseURL),
 		userGetAdd: NewAuthUser(),
 	}
 }

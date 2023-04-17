@@ -3,10 +3,12 @@ package cash
 import (
 	"encoding/binary"
 	"errors"
+	"fmt"
 	"log"
 	"regexp"
 	"strconv"
 	"sync"
+	"yaGoShortURL/internal/static"
 )
 
 type Urls struct {
@@ -14,6 +16,9 @@ type Urls struct {
 	mux     sync.RWMutex
 	// Для поиска по индексу
 	usersUrls map[uint64][]string
+	// Мапа с сокращенными URL
+	URLsAllInfo map[string]static.JSONAllInfo
+	baseURL     string
 }
 
 func (u *Urls) WriteURLInCash(fullURL string, userIDB []byte) (string, error) {
@@ -41,13 +46,20 @@ func (u *Urls) WriteURLInCash(fullURL string, userIDB []byte) (string, error) {
 		if numbOfElements%2 != 0 {
 			return "", errors.New("ошибка кеша")
 		}
+		//Текущий индекс (для сокращенного URL)
+		currentID := numbOfElements / 2
 		//Запись в map после проверок
 		//Форматирование ключей
-		idKey := "id:" + strconv.Itoa(numbOfElements/2)
+		idKey := "id:" + strconv.Itoa(currentID)
 		strKey := "url:" + fullURL
 		u.urlsMap[idKey] = fullURL
 		u.urlsMap[strKey] = fullURL
-
+		//Составим полный адрес сокращенного URL
+		baseURL := fmt.Sprintf("%s%s%v", u.baseURL, "/", currentID)
+		u.URLsAllInfo[idKey] = static.JSONAllInfo{
+			FullURL: fullURL,
+			BaseURL: baseURL,
+		}
 		// привязка url к пользователю
 		// проверка, что у этого пользователя уже есть URLs
 		_, ok := u.usersUrls[userID]
@@ -61,9 +73,8 @@ func (u *Urls) WriteURLInCash(fullURL string, userIDB []byte) (string, error) {
 			userURLs = append(userURLs, idKey)
 			u.usersUrls[userID] = userURLs
 		}
-		return strconv.Itoa(numbOfElements / 2), nil
+		return strconv.Itoa(currentID), nil
 	} else {
-
 		return "", errors.New("передаваемая строка не является URL")
 	}
 }
@@ -81,11 +92,11 @@ func (u *Urls) ReadURLFromCash(id string) (string, error) {
 	return fullURL, nil
 }
 
-func (u *Urls) ReadAllUserURLFromCash(userIDB []byte) ([]string, error) {
+func (u *Urls) ReadAllUserURLFromCash(userIDB []byte) ([]static.JSONAllInfo, error) {
 	// Получение id в виде числа
 	userID := binary.LittleEndian.Uint64(userIDB)
 	// Слайс для результата, в нем все URL от User-а
-	userURLs := make([]string, 0, 10)
+	userURLs := make([]static.JSONAllInfo, 0, 10)
 
 	u.mux.Lock()
 	defer u.mux.Unlock()
@@ -94,27 +105,29 @@ func (u *Urls) ReadAllUserURLFromCash(userIDB []byte) ([]string, error) {
 	_, ok := u.usersUrls[userID]
 	if !ok {
 		// Если URL-ов нет, создаем слайс для их id-ков
-		userURLs = make([]string, 0, 10)
+		//userURLs = make([]string, 0, 10)
 		return userURLs, nil
 	} else {
 		userURLsID := u.usersUrls[userID]
 		for _, id := range userURLsID {
-			fullURL, err := u.urlsMap[id]
+			currentURLsAllInfo, err := u.URLsAllInfo[id]
 			if !err {
 				return userURLs, errors.New("ошибка чтения из кеша всех URL пользователя: такого ID не существует")
 			}
-			if fullURL == "" {
+			if currentURLsAllInfo.FullURL == "" {
 				return userURLs, errors.New("ошибка чтения из кеша всех URL пользователя: пустой URL")
 			}
-			userURLs = append(userURLs, fullURL)
+			userURLs = append(userURLs, currentURLsAllInfo)
 		}
 		return userURLs, nil
 	}
 }
 
-func NewUrls() *Urls {
+func NewUrls(baseURL string) *Urls {
 	return &Urls{
-		urlsMap:   make(map[string]string),
-		usersUrls: make(map[uint64][]string),
+		baseURL:     baseURL,
+		urlsMap:     make(map[string]string),
+		usersUrls:   make(map[uint64][]string),
+		URLsAllInfo: make(map[string]static.JSONAllInfo),
 	}
 }

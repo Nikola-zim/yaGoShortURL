@@ -1,10 +1,12 @@
 package service
 
+import "yaGoShortURL/internal/static"
+
 // CashURL интерфейс работы с кэшем
 type CashURL interface {
 	WriteURLInCash(fullURL string, userIDB []byte) (string, error)
 	ReadURLFromCash(id string) (string, error)
-	ReadAllUserURLFromCash(id []byte) ([]string, error)
+	ReadAllUserURLFromCash(id []byte) ([]static.JSONAllInfo, error)
 }
 
 type AuthUser interface {

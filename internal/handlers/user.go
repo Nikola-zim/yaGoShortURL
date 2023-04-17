@@ -7,7 +7,6 @@ import (
 	"log"
 	"net/http"
 	"reflect"
-	"strings"
 )
 
 type UserInteract struct {
@@ -84,8 +83,7 @@ func (uI *UserInteract) getAllUserURL(c *gin.Context) {
 	if len(userURLs) == 0 {
 		c.AbortWithStatus(http.StatusNoContent)
 	}
-	strData := strings.Join(userURLs, "\n,")
-	c.Data(http.StatusNoContent, "application/json", []byte(strData))
+	c.JSON(http.StatusOK, userURLs)
 }
 
 func NewUserInteract(service Cash) *UserInteract {

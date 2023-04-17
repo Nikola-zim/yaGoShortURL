@@ -1,13 +1,16 @@
 package service
 
-import "encoding/binary"
+import (
+	"encoding/binary"
+	"yaGoShortURL/internal/static"
+)
 
 type CashURLService struct {
 	cash      CashURL
 	fileStore FileStoreURL
 }
 
-func (cu *CashURLService) ReadAllUserURLFromCash(id []byte) ([]string, error) {
+func (cu *CashURLService) ReadAllUserURLFromCash(id []byte) ([]static.JSONAllInfo, error) {
 	return cu.cash.ReadAllUserURLFromCash(id)
 }
 

@@ -43,7 +43,7 @@ func main() {
 	cfg := configInit()
 
 	// Создание экземпляров компоненинтов сервиса
-	serverCash := cash.NewCash()
+	serverCash := cash.NewCash(cfg.BaseURL)
 	serverFileStorage := filestorage.NewFileStorage(cfg.UnitTestFlag, cfg.FileStoragePath)
 	services := service.NewService(serverCash, serverFileStorage)
 	myHandlers := handlers.NewHandler(services, cfg.BaseURL)
