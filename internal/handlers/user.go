@@ -1,10 +1,12 @@
 package handlers
 
 import (
+	"encoding/binary"
 	"encoding/hex"
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
+	"reflect"
 	"strings"
 )
 
@@ -52,11 +54,26 @@ func (uI *UserInteract) cookieSetAndGet() gin.HandlerFunc {
 }
 
 func (uI *UserInteract) getAllUserURL(c *gin.Context) {
-	// Получение userIdB
-	cookie, _ := c.Cookie("user_id")
-	data, err := hex.DecodeString(cookie)
+	/// Получение userIdB
+	cookie, err := c.Cookie("user_id")
+	data := make([]byte, 8, 39)
+	// Ошибка означает что куки небыло, и нужно взять ID, который установили в запросе
 	if err != nil {
-		c.AbortWithStatus(http.StatusInternalServerError)
+		userID, _ := c.Get("user_ID")
+		switch t := userID.(type) {
+		case uint64:
+			ID := reflect.ValueOf(t).Uint()
+			//Если UserID был установлен, т.е. кука была только получена
+			if userID != 0 {
+				data = make([]byte, 8)
+				binary.LittleEndian.PutUint64(data, ID)
+			}
+		}
+	} else {
+		data, err = hex.DecodeString(cookie)
+		if err != nil {
+			c.AbortWithStatus(http.StatusInternalServerError)
+		}
 	}
 	// data[:8] - байты id-шника
 	userURLs, err := uI.service.ReadAllUserURLFromCash(data[:8])

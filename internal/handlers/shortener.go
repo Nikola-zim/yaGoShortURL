@@ -87,7 +87,6 @@ func (a *AddAndGetURLHandler) addAndGetJSON(c *gin.Context) {
 	if err != nil {
 		fmt.Println(err)
 	}
-
 	// Получение userIdB
 	cookie, err := c.Cookie("user_id")
 	data := make([]byte, 8, 39)
