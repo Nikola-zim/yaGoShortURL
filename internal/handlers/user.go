@@ -68,7 +68,7 @@ func (uI *UserInteract) getAllUserURL(c *gin.Context) {
 		c.AbortWithStatus(http.StatusNoContent)
 	}
 	strData := strings.Join(userURLs, "\n,")
-	c.Data(http.StatusTemporaryRedirect, "text/plain", []byte(strData))
+	c.Data(http.StatusNoContent, "application/json", []byte(strData))
 }
 
 func NewUserInteract(service Cash) *UserInteract {
