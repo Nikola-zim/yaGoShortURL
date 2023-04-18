@@ -7,6 +7,7 @@ type MemoryService struct {
 	fileStore FileStoreURL
 }
 
+// RecoverAllURL Восстановление кэша из файла
 func (m MemoryService) RecoverAllURL() error {
 	for {
 		var nextURL string
