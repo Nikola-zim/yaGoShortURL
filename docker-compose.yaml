@@ -1,0 +1,19 @@
+version: '3.3'
+services:
+  postgres:
+    container_name: postgresForYa
+    image: postgres:14.3
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_DB: yaGoShortURL
+      POSTGRES_USER: yaGoShortURL
+      POSTGRES_PASSWORD: yaGoShortURL
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U yaGoShortURL"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+volumes:
+  db:
+    driver: local

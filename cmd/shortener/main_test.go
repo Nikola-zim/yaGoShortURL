@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/stretchr/testify/assert"
 	"io"
+	"log"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -10,6 +11,7 @@ import (
 	"yaGoShortURL/internal/cash"
 	"yaGoShortURL/internal/filestorage"
 	"yaGoShortURL/internal/handlers"
+	"yaGoShortURL/internal/postgres"
 	"yaGoShortURL/internal/service"
 )
 
@@ -91,13 +93,19 @@ func TestPingRoute(t *testing.T) {
 	cfg.UnitTestFlag = false
 	// Создание экземпляров компоненинтов сервиса
 	serverCash := cash.NewCash(cfg.BaseURL)
+	pg, err := postgres.New(cfg.PostgresURL)
+	// Ошибка БД
+	if err != nil {
+		log.Println("app - Run - postgres.New: %w", err)
+	}
+	defer pg.Close()
 	serverFileStorage := filestorage.NewFileStorage(cfg.UnitTestFlag, cfg.FileStoragePath)
-	services := service.NewService(serverCash, serverFileStorage)
+	services := service.NewService(serverCash, serverFileStorage, pg)
 	myHandlers := handlers.NewHandler(services, cfg.BaseURL)
 
 	router := myHandlers.InitRoutes()
 
-	_, err := http.NewRequest("GET", "/", nil)
+	_, err = http.NewRequest("GET", "/", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
