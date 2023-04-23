@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"flag"
+	"fmt"
 	"github.com/caarlos0/env/v6"
 	"log"
 	"os"
@@ -11,6 +12,7 @@ import (
 	"yaGoShortURL/internal/cash"
 	"yaGoShortURL/internal/filestorage"
 	"yaGoShortURL/internal/handlers"
+	"yaGoShortURL/internal/postgres"
 	"yaGoShortURL/internal/server"
 	"yaGoShortURL/internal/service"
 	"yaGoShortURL/internal/static"
@@ -32,6 +34,10 @@ func configInit() static.ConfigInit {
 	if cfg.FileStoragePath == "" {
 		flag.StringVar(&cfg.FileStoragePath, "f", "/URLStorage.json", "Constant memory file path")
 	}
+	if cfg.PostgresURL == "" {
+		flag.StringVar(&cfg.PostgresURL, "d", "localhost:5433", "Postgres URL address")
+	}
+	cfg.PostgresURL = fmt.Sprintf("postgres://%s:%s@%s/%s", "yaGoShortURL", "yaGoShortURL", cfg.PostgresURL, "yaGoShortURL")
 	flag.Parse()
 	cfg.UnitTestFlag = false
 	return cfg
@@ -44,12 +50,17 @@ func main() {
 
 	// Создание экземпляров компоненинтов сервиса
 	serverCash := cash.NewCash(cfg.BaseURL)
+	pg, err := postgres.New(cfg.PostgresURL)
+	// Ошибка БД
+	if err != nil {
+		log.Println("app - Run - postgres.New: %w", err)
+	}
+	defer pg.Close()
 	serverFileStorage := filestorage.NewFileStorage(cfg.UnitTestFlag, cfg.FileStoragePath)
-	services := service.NewService(serverCash, serverFileStorage)
+	services := service.NewService(serverCash, serverFileStorage, pg)
 	myHandlers := handlers.NewHandler(services, cfg.BaseURL)
-
 	//Восстановление кеша
-	err := services.MemoryService.RecoverAllURL()
+	err = services.MemoryService.RecoverAllURL()
 	if err != nil {
 		log.Println(err)
 	}

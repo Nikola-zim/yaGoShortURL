@@ -26,6 +26,10 @@ type FileStoreURL interface {
 	ReadNextURL() (string, uint64, error)
 }
 
+type DB interface {
+	PingDB() error
+}
+
 type Memory interface {
 	RecoverAllURL() error
 }
@@ -34,12 +38,14 @@ type Service struct {
 	CashURLService
 	MemoryService
 	AuthService
+	DBService
 }
 
-func NewService(cash Cash, fileStoreURL FileStoreURL) *Service {
+func NewService(cash Cash, fileStoreURL FileStoreURL, dataBase DB) *Service {
 	return &Service{
 		CashURLService: *NewCashURLService(cash, fileStoreURL),
 		MemoryService:  *NewMemoryService(cash, fileStoreURL),
 		AuthService:    *NewAuthService(cash),
+		DBService:      *NewDBService(dataBase),
 	}
 }

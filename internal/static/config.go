@@ -5,4 +5,5 @@ type ConfigInit struct {
 	BaseURL         string `env:"BASE_URL"`
 	FileStoragePath string `env:"FILE_STORAGE_PATH"`
 	UnitTestFlag    bool
+	PostgresURL     string
 }

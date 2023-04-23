@@ -26,10 +26,15 @@ type authUser interface {
 	AddUser() (string, uint64, error)
 }
 
+type DBService interface {
+	PingDB() error
+}
+
 // Cash Собранный интерфейс для кэша
 type Cash interface {
 	addAndGetURLService
 	authUser
+	DBService
 }
 
 // Добавление id пользователя (запись кук)
@@ -41,12 +46,14 @@ type authorizationService interface {
 type Handler struct {
 	addAndGetURL
 	UserInteract
+	Postgres
 }
 
 func NewHandler(service Cash, baseURL string) *Handler {
 	return &Handler{
 		addAndGetURL: NewAddAndGetURLHandler(service, baseURL),
 		UserInteract: *NewUserInteract(service),
+		Postgres:     *NewPostgres(service),
 	}
 }
 
@@ -153,6 +160,12 @@ func (h *Handler) InitRoutes() *gin.Engine {
 	getAllURL.Use(h.cookieSetAndGet())
 	{
 		getAllURL.GET("urls", h.getAllUserURL)
+	}
+
+	// ручка для проверки соединения с БД
+	getPGPing := router.Group("/ping")
+	{
+		getPGPing.GET("", h.pingDB)
 	}
 	return router
 }
