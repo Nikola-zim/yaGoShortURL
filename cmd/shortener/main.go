@@ -35,7 +35,7 @@ func configInit() entity.ConfigInit {
 		flag.StringVar(&cfg.FileStoragePath, "f", "/URLStorage.json", "Constant memory file path")
 	}
 	if cfg.PostgresURL == "" {
-		flag.StringVar(&cfg.PostgresURL, "d", "", "Postgres URL address")
+		flag.StringVar(&cfg.PostgresURL, "d", "localhost:5433", "Postgres URL address")
 	}
 
 	flag.Parse()
@@ -60,9 +60,9 @@ func main() {
 	serverCash := cash.NewCash(cfg.BaseURL)
 
 	// Выполнение миграций
-	if cfg.UsingDB {
-		Migrate(cfg.PostgresURL)
-	}
+	//if cfg.UsingDB {
+	//	Migrate(cfg.PostgresURL)
+	//}
 
 	// Инициализация БД
 	pg, err := postgres.New(cfg.PostgresURL, cfg.UsingDB)
