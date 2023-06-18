@@ -54,8 +54,8 @@ func TestPingRoute(t *testing.T) {
 			method: "POST",
 			body:   "https://pkg.go.dev/net/http",
 			want: want{
-				code:     http.StatusBadRequest,
-				response: "",
+				code:     http.StatusConflict,
+				response: "http://localhost:8080/1",
 			},
 		},
 		{
