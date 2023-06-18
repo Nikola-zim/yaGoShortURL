@@ -20,7 +20,6 @@ const (
 func Migrate(url string) {
 	databaseURL := url
 	log.Printf("PG URL in migrations: %s\n", databaseURL)
-	databaseURL += "?sslmode=disable"
 
 	var (
 		attempts = _defaultAttempts
