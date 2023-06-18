@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"log"
 	"time"
 
@@ -20,7 +21,7 @@ const (
 func Migrate(url string) {
 	databaseURL := url
 	log.Printf("PG URL in migrations: %s\n", databaseURL)
-
+	fmt.Println(databaseURL)
 	var (
 		attempts = _defaultAttempts
 		err      error
