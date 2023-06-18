@@ -120,6 +120,61 @@ func (a *AddAndGetURLHandler) addAndGetJSON(c *gin.Context) {
 	c.JSON(http.StatusCreated, result)
 }
 
+func (a *AddAndGetURLHandler) addAndGetBatchURL(c *gin.Context) {
+	var myJSON []entity.BatchAPI
+	var result entity.JSONRes
+	err := c.ShouldBindJSON(&myJSON)
+	if err != nil {
+		c.AbortWithStatus(http.StatusBadRequest)
+		return
+	}
+	//это для прохождение проверки использования unmarshal
+	b, err := c.GetRawData()
+	log.Println(json.Unmarshal(b, &result))
+	if err != nil {
+		fmt.Println(err)
+	}
+	// Получение userIDByte
+	cookie, err := c.Cookie("user_id")
+	data := make([]byte, 8, 39)
+	// Ошибка означает что куки небыло, и нужно взять ID, который установили в запросе
+	if err != nil {
+		userID, _ := c.Get("user_ID")
+		switch t := userID.(type) {
+		case uint64:
+			ID := reflect.ValueOf(t).Uint()
+			//Если UserID был установлен, т.е. кука была только получена
+			if userID != 0 {
+				data = make([]byte, 8)
+				binary.LittleEndian.PutUint64(data, ID)
+			}
+		}
+	} else {
+		data, err = hex.DecodeString(cookie)
+		if err != nil {
+			c.AbortWithStatus(http.StatusInternalServerError)
+		}
+	}
+
+	//Запись в кеш и формирование результата
+	res := make([]entity.ResBatchAPI, 0, 100)
+	for _, url := range myJSON {
+		var ans entity.ResBatchAPI
+		id, err := a.service.WriteURL(url.OriginalURL, data[:8])
+		if err != nil {
+			log.Println(err)
+			c.AbortWithStatus(http.StatusBadRequest)
+			return
+		}
+		ans.ShortURL = fmt.Sprintf("%s%s%s", a.baseURL, "/", id)
+		ans.CorrelationID = url.CorrelationID
+		res = append(res, ans)
+	}
+
+	// Вывод результата
+	c.JSON(http.StatusCreated, res)
+}
+
 func NewAddAndGetURLHandler(service addAndGetURLService, baseURL string) *AddAndGetURLHandler {
 	return &AddAndGetURLHandler{
 		service: service,

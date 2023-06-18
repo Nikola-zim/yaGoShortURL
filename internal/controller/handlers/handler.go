@@ -13,6 +13,7 @@ type addAndGetURL interface {
 	addURL(c *gin.Context)
 	getURL(c *gin.Context)
 	addAndGetJSON(c *gin.Context)
+	addAndGetBatchURL(c *gin.Context)
 }
 
 type addAndGetURLService interface {
@@ -145,27 +146,27 @@ func (h *Handler) InitRoutes() *gin.Engine {
 		shortenerURL.GET("/:id", h.getURL)
 	}
 
+	// Получение сокращенного URL
 	shorten := router.Group("/api/")
 	// использование middleware для сжатия запросов
 	shorten.Use(gzipHandle())
 	shorten.Use(h.cookieSetAndGet())
 	{
 		shorten.POST("shorten", h.addAndGetJSON)
+		shorten.GET("user/urls", h.getAllUserURL)
+		shorten.POST("shorten/batch", h.addAndGetBatchURL)
 	}
 
-	// ручка для получения всех URL
-	getAllURL := router.Group("api/user/")
-	// использование middleware для сжатия запросов
-	getAllURL.Use(gzipHandle())
-	getAllURL.Use(h.cookieSetAndGet())
+	// батчинг
+	shortenBatching := router.Group("/ping")
 	{
-		getAllURL.GET("urls", h.getAllUserURL)
+		shortenBatching.GET("", h.pingDB)
 	}
 
 	// ручка для проверки соединения с БД
-	getPGPing := router.Group("/ping")
+	getPGPing := router.Group("")
 	{
-		getPGPing.GET("", h.pingDB)
+		getPGPing.POST("", h.pingDB)
 	}
 	return router
 }
