@@ -44,6 +44,7 @@ func configInit() entity.ConfigInit {
 	if cfg.PostgresURL != "" {
 		cfg.UsingDB = true
 		cfg.PostgresURL = fmt.Sprintf("postgres://%s:%s@%s/%s", "yaGoShortURL", "yaGoShortURL", cfg.PostgresURL, "yaGoShortURL")
+		cfg.PostgresURL += "?sslmode=disable"
 	} else {
 		cfg.UsingDB = false
 	}
@@ -60,9 +61,9 @@ func main() {
 	serverCash := cash.NewCash(cfg.BaseURL)
 
 	// Выполнение миграций
-	//if cfg.UsingDB {
-	//	Migrate(cfg.PostgresURL)
-	//}
+	if cfg.UsingDB {
+		Migrate(cfg.PostgresURL)
+	}
 
 	// Инициализация БД
 	pg, err := postgres.New(cfg.PostgresURL, cfg.UsingDB)
