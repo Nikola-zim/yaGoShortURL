@@ -1,11 +1,11 @@
 package cash
 
-import "yaGoShortURL/internal/static"
+import "yaGoShortURL/internal/entity"
 
 type UrlsRW interface {
-	WriteURLInCash(fullURL string, id []byte) (string, error)
+	WriteURL(fullURL string, id []byte) (string, error)
 	ReadURLFromCash(id string) (string, error)
-	ReadAllUserURLFromCash(id []byte) ([]static.JSONAllInfo, error)
+	ReadAllUserURLFromCash(id []byte) ([]entity.JSONAllInfo, error)
 }
 
 type userGetAdd interface {

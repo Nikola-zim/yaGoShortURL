@@ -1,4 +1,4 @@
-package static
+package entity
 
 type JSONApi struct {
 	URL string

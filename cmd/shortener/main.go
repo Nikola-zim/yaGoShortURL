@@ -9,18 +9,18 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
-	"yaGoShortURL/internal/cash"
-	"yaGoShortURL/internal/filestorage"
-	"yaGoShortURL/internal/handlers"
-	"yaGoShortURL/internal/postgres"
-	"yaGoShortURL/internal/server"
-	"yaGoShortURL/internal/service"
-	"yaGoShortURL/internal/static"
+	"yaGoShortURL/internal/components/cash"
+	"yaGoShortURL/internal/components/filestorage"
+	"yaGoShortURL/internal/components/postgres"
+	"yaGoShortURL/internal/controller/handlers"
+	"yaGoShortURL/internal/entity"
+	"yaGoShortURL/internal/usecase"
+	"yaGoShortURL/pkg/server"
 )
 
-func configInit() static.ConfigInit {
+func configInit() entity.ConfigInit {
 	//Получение конфигурации из переменных окружения
-	var cfg static.ConfigInit
+	var cfg entity.ConfigInit
 	err := env.Parse(&cfg)
 	if err != nil {
 		log.Println(err)
@@ -37,33 +37,62 @@ func configInit() static.ConfigInit {
 	if cfg.PostgresURL == "" {
 		flag.StringVar(&cfg.PostgresURL, "d", "localhost:5433", "Postgres URL address")
 	}
-	cfg.PostgresURL = fmt.Sprintf("postgres://%s:%s@%s/%s", "yaGoShortURL", "yaGoShortURL", cfg.PostgresURL, "yaGoShortURL")
+
 	flag.Parse()
 	cfg.UnitTestFlag = false
+
+	if cfg.PostgresURL != "" {
+		cfg.UsingDB = true
+		cfg.PostgresURL = fmt.Sprintf("postgres://%s:%s@%s/%s", "yaGoShortURL", "yaGoShortURL", cfg.PostgresURL, "yaGoShortURL")
+	} else {
+		cfg.UsingDB = false
+	}
+
 	return cfg
 }
 
 func main() {
-
+	ctx := context.Background()
 	// Конфигурирование сервиса
 	cfg := configInit()
 
-	// Создание экземпляров компоненинтов сервиса
+	// Создание экземпляров use case
 	serverCash := cash.NewCash(cfg.BaseURL)
-	pg, err := postgres.New(cfg.PostgresURL)
-	// Ошибка БД
+
+	// Выполнение миграций
+	if cfg.UsingDB {
+		Migrate(cfg.PostgresURL)
+	}
+
+	// Инициализация БД
+	pg, err := postgres.New(cfg.PostgresURL, cfg.UsingDB)
 	if err != nil {
 		log.Println("app - Run - postgres.New: %w", err)
 	}
 	defer pg.Close()
+
 	serverFileStorage := filestorage.NewFileStorage(cfg.UnitTestFlag, cfg.FileStoragePath)
-	services := service.NewService(serverCash, serverFileStorage, pg)
+
+	// Инициализация use case
+	services := usecase.NewService(serverCash, serverFileStorage, pg, cfg.UsingDB)
+
+	// Хендлеры
 	myHandlers := handlers.NewHandler(services, cfg.BaseURL)
-	//Восстановление кеша
-	err = services.MemoryService.RecoverAllURL()
-	if err != nil {
-		log.Println(err)
+
+	if cfg.UsingDB {
+		//Восстановление кеша из pg
+		err = services.DBService.RecoverAllURL(ctx)
+		if err != nil {
+			log.Println(err)
+		}
+	} else {
+		//Восстановление кеша из файлов
+		err = services.MemoryService.RecoverAllURL()
+		if err != nil {
+			log.Println(err)
+		}
 	}
+
 	//Создание экземпляра сервера
 	srv := new(server.Server)
 
@@ -82,7 +111,7 @@ func main() {
 	// We received an interrupt signal, shut down.
 
 	// Мягкое завершение
-	if err := srv.Shutdown(context.Background()); err != nil {
+	if err := srv.Shutdown(ctx); err != nil {
 		// Error from closing listeners, or context timeout:
 		log.Printf("HTTP server Shutdown: %v", err)
 	}

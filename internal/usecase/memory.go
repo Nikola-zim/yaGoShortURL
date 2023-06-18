@@ -1,4 +1,4 @@
-package service
+package usecase
 
 import "encoding/binary"
 
@@ -17,7 +17,7 @@ func (m MemoryService) RecoverAllURL() error {
 		}
 		userIDB := make([]byte, 8)
 		binary.LittleEndian.PutUint64(userIDB, userID)
-		_, err = m.cash.WriteURLInCash(nextURL, userIDB)
+		_, err = m.cash.WriteURL(nextURL, userIDB)
 		if err != nil {
 			return err
 		}

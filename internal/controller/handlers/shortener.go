@@ -9,7 +9,7 @@ import (
 	"log"
 	"net/http"
 	"reflect"
-	"yaGoShortURL/internal/static"
+	"yaGoShortURL/internal/entity"
 )
 
 type AddAndGetURLHandler struct {
@@ -49,7 +49,7 @@ func (a *AddAndGetURLHandler) addURL(c *gin.Context) {
 	}
 
 	// data[:8] - байты id-шника
-	id, err := a.service.WriteURLInCash(string(b), data[:8])
+	id, err := a.service.WriteURL(string(b), data[:8])
 	if err != nil {
 		log.Println(err)
 		c.AbortWithStatus(http.StatusBadRequest)
@@ -74,8 +74,8 @@ func (a *AddAndGetURLHandler) getURL(c *gin.Context) {
 }
 
 func (a *AddAndGetURLHandler) addAndGetJSON(c *gin.Context) {
-	var myJSON static.JSONApi
-	var result static.JSONRes
+	var myJSON entity.JSONApi
+	var result entity.JSONRes
 	err := c.ShouldBindJSON(&myJSON)
 	if err != nil {
 		c.AbortWithStatus(http.StatusBadRequest)
@@ -109,7 +109,7 @@ func (a *AddAndGetURLHandler) addAndGetJSON(c *gin.Context) {
 		}
 	}
 	//Запись в кеш
-	id, err := a.service.WriteURLInCash(myJSON.URL, data[:8])
+	id, err := a.service.WriteURL(myJSON.URL, data[:8])
 	if err != nil {
 		log.Println(err)
 		c.AbortWithStatus(http.StatusBadRequest)

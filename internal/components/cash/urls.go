@@ -8,7 +8,7 @@ import (
 	"regexp"
 	"strconv"
 	"sync"
-	"yaGoShortURL/internal/static"
+	"yaGoShortURL/internal/entity"
 )
 
 type Urls struct {
@@ -17,11 +17,11 @@ type Urls struct {
 	// Для поиска по индексу
 	usersUrls map[uint64][]string
 	// Мапа с сокращенными URL
-	URLsAllInfo map[string]static.JSONAllInfo
+	URLsAllInfo map[string]entity.JSONAllInfo
 	baseURL     string
 }
 
-func (u *Urls) WriteURLInCash(fullURL string, userIDB []byte) (string, error) {
+func (u *Urls) WriteURL(fullURL string, userIDB []byte) (string, error) {
 	if len(userIDB) != 8 {
 		return "", errors.New("нет userIDB")
 	}
@@ -35,6 +35,7 @@ func (u *Urls) WriteURLInCash(fullURL string, userIDB []byte) (string, error) {
 	log.Println(fullURL)
 	//Проверка того, что передаваемая строка является URL
 	re := regexp.MustCompile(`^http(s)?:\/\/[^\s]+$`)
+
 	if re.MatchString(fullURL) {
 		// Для проверки наличия Url-ов
 		strKeyCheck := "url:" + fullURL
@@ -57,7 +58,7 @@ func (u *Urls) WriteURLInCash(fullURL string, userIDB []byte) (string, error) {
 		u.urlsMap[strKey] = fullURL
 		//Составим полный адрес сокращенного URL
 		baseURL := fmt.Sprintf("%s%s%v", u.baseURL, "/", currentID)
-		u.URLsAllInfo[idKey] = static.JSONAllInfo{
+		u.URLsAllInfo[idKey] = entity.JSONAllInfo{
 			FullURL: fullURL,
 			BaseURL: baseURL,
 		}
@@ -75,6 +76,7 @@ func (u *Urls) WriteURLInCash(fullURL string, userIDB []byte) (string, error) {
 			userURLs = append(userURLs, idKey)
 			u.usersUrls[userID] = userURLs
 		}
+
 		return strconv.Itoa(currentID), nil
 	} else {
 		return "", errors.New("передаваемая строка не является URL")
@@ -94,11 +96,11 @@ func (u *Urls) ReadURLFromCash(id string) (string, error) {
 	return fullURL, nil
 }
 
-func (u *Urls) ReadAllUserURLFromCash(userIDB []byte) ([]static.JSONAllInfo, error) {
+func (u *Urls) ReadAllUserURLFromCash(userIDB []byte) ([]entity.JSONAllInfo, error) {
 	// Получение id в виде числа
 	userID := binary.LittleEndian.Uint64(userIDB)
 	// Слайс для результата, в нем все URL от User-а
-	userURLs := make([]static.JSONAllInfo, 0, 10)
+	userURLs := make([]entity.JSONAllInfo, 0, 10)
 
 	u.mux.Lock()
 	defer u.mux.Unlock()
@@ -130,6 +132,6 @@ func NewUrls(baseURL string) *Urls {
 		baseURL:     baseURL,
 		urlsMap:     make(map[string]string),
 		usersUrls:   make(map[uint64][]string),
-		URLsAllInfo: make(map[string]static.JSONAllInfo),
+		URLsAllInfo: make(map[string]entity.JSONAllInfo),
 	}
 }

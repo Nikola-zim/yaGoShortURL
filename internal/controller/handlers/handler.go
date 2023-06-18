@@ -6,7 +6,7 @@ import (
 	"log"
 	"net/http"
 	"strings"
-	"yaGoShortURL/internal/static"
+	"yaGoShortURL/internal/entity"
 )
 
 type addAndGetURL interface {
@@ -16,9 +16,9 @@ type addAndGetURL interface {
 }
 
 type addAndGetURLService interface {
-	WriteURLInCash(fullURL string, userIDB []byte) (string, error)
+	WriteURL(fullURL string, userIDB []byte) (string, error)
 	ReadURLFromCash(id string) (string, error)
-	ReadAllUserURLFromCash(id []byte) ([]static.JSONAllInfo, error)
+	ReadAllUserURLFromCash(id []byte) ([]entity.JSONAllInfo, error)
 }
 
 type authUser interface {

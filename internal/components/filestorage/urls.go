@@ -17,7 +17,7 @@ type UrlsFilesRW struct {
 	scanner     *bufio.Scanner
 }
 
-func (u UrlsFilesRW) WriteURL(fullURL string, id string, userID uint64) error {
+func (u UrlsFilesRW) WriteURLInFS(fullURL string, id string, userID uint64) error {
 	currentURL := oneURL{
 		ID:      id,
 		FullURL: fullURL,

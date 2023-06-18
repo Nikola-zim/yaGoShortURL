@@ -1,4 +1,4 @@
-package static
+package entity
 
 type ConfigInit struct {
 	ServerAddress   string `env:"SERVER_ADDRESS"`
@@ -6,4 +6,5 @@ type ConfigInit struct {
 	FileStoragePath string `env:"FILE_STORAGE_PATH"`
 	UnitTestFlag    bool
 	PostgresURL     string `env:"DATABASE_DSN"`
+	UsingDB         bool
 }

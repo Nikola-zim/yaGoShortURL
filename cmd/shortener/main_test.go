@@ -8,11 +8,11 @@ import (
 	"net/http/httptest"
 	"strings"
 	"testing"
-	"yaGoShortURL/internal/cash"
-	"yaGoShortURL/internal/filestorage"
-	"yaGoShortURL/internal/handlers"
-	"yaGoShortURL/internal/postgres"
-	"yaGoShortURL/internal/service"
+	"yaGoShortURL/internal/components/cash"
+	"yaGoShortURL/internal/components/filestorage"
+	"yaGoShortURL/internal/components/postgres"
+	"yaGoShortURL/internal/controller/handlers"
+	"yaGoShortURL/internal/usecase"
 )
 
 func TestPingRoute(t *testing.T) {
@@ -93,14 +93,14 @@ func TestPingRoute(t *testing.T) {
 	cfg.UnitTestFlag = false
 	// Создание экземпляров компоненинтов сервиса
 	serverCash := cash.NewCash(cfg.BaseURL)
-	pg, err := postgres.New(cfg.PostgresURL)
+	pg, err := postgres.New(cfg.PostgresURL, cfg.UsingDB)
 	// Ошибка БД
 	if err != nil {
 		log.Println("app - Run - postgres.New: %w", err)
 	}
 	defer pg.Close()
 	serverFileStorage := filestorage.NewFileStorage(cfg.UnitTestFlag, cfg.FileStoragePath)
-	services := service.NewService(serverCash, serverFileStorage, pg)
+	services := usecase.NewService(serverCash, serverFileStorage, pg, cfg.UsingDB)
 	myHandlers := handlers.NewHandler(services, cfg.BaseURL)
 
 	router := myHandlers.InitRoutes()
