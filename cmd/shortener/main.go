@@ -44,7 +44,7 @@ func configInit() entity.ConfigInit {
 	if cfg.PostgresURL != "" {
 		cfg.UsingDB = true
 		cfg.PostgresURL = fmt.Sprintf("postgres://%s:%s@%s/%s", "yaGoShortURL", "yaGoShortURL", cfg.PostgresURL, "yaGoShortURL")
-		cfg.PostgresURL += "?sslmode=disable"
+		//cfg.PostgresURL += "?sslmode=require"
 	} else {
 		cfg.UsingDB = false
 	}
