@@ -163,10 +163,5 @@ func (h *Handler) InitRoutes() *gin.Engine {
 		shortenBatching.GET("", h.pingDB)
 	}
 
-	// ручка для проверки соединения с БД
-	getPGPing := router.Group("")
-	{
-		getPGPing.POST("", h.pingDB)
-	}
 	return router
 }
