@@ -123,7 +123,7 @@ func (a *AddAndGetURLHandler) addAndGetJSON(c *gin.Context) {
 		var eu *entity.ErrorURL
 		if errors.As(err, &eu) {
 			result.Res = fmt.Sprintf("%s%s%s", a.baseURL, "/", err.Error())
-			c.JSON(http.StatusCreated, result)
+			c.JSON(http.StatusConflict, result)
 			return
 		} else {
 			c.AbortWithStatus(http.StatusBadRequest)
