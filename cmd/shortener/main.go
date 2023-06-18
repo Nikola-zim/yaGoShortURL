@@ -35,7 +35,7 @@ func configInit() entity.ConfigInit {
 		flag.StringVar(&cfg.FileStoragePath, "f", "/URLStorage.json", "Constant memory file path")
 	}
 	if cfg.PostgresURL == "" {
-		flag.StringVar(&cfg.PostgresURL, "d", "localhost:5433", "Postgres URL address")
+		flag.StringVar(&cfg.PostgresURL, "d", "", "Postgres URL address")
 	}
 
 	flag.Parse()
