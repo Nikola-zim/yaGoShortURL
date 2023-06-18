@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"flag"
-	"fmt"
 	"github.com/caarlos0/env/v6"
 	"log"
 	"os"
@@ -43,7 +42,7 @@ func configInit() entity.ConfigInit {
 
 	if cfg.PostgresURL != "" {
 		cfg.UsingDB = true
-		cfg.PostgresURL = fmt.Sprintf("postgres://%s:%s@%s/%s", "yaGoShortURL", "yaGoShortURL", cfg.PostgresURL, "yaGoShortURL")
+		//cfg.PostgresURL = fmt.Sprintf("postgres://%s:%s@%s/%s", "yaGoShortURL", "yaGoShortURL", cfg.PostgresURL, "yaGoShortURL")
 		//cfg.PostgresURL += "?sslmode=require"
 	} else {
 		cfg.UsingDB = false
