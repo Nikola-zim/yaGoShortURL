@@ -39,13 +39,13 @@ func (u *Urls) WriteURL(fullURL string, userIDB []byte) (string, error) {
 	if re.MatchString(fullURL) {
 		// Для проверки наличия Url-ов
 		strKeyCheck := "url:" + fullURL
-		_, err := u.urlsMap[strKeyCheck]
+		url, err := u.urlsMap[strKeyCheck]
 		if err {
-			return "", errors.New("URL is already in memory")
+			return "", entity.NewErrorURL(errors.New("URL is already in memory"), url)
 		}
 		//Всегда должнобыть четное число элементов в структуре map
 		if numbOfElements%2 != 0 {
-			return "", errors.New("ошибка кеша")
+			return "", errors.New("cash error: number of elements is invalid")
 		}
 		//Текущий индекс (для сокращенного URL)
 		currentID := numbOfElements / 2
@@ -55,7 +55,7 @@ func (u *Urls) WriteURL(fullURL string, userIDB []byte) (string, error) {
 		idKey := "id:" + strconv.Itoa(currentID)
 		strKey := "url:" + fullURL
 		u.urlsMap[idKey] = fullURL
-		u.urlsMap[strKey] = fullURL
+		u.urlsMap[strKey] = strconv.Itoa(currentID)
 		//Составим полный адрес сокращенного URL
 		baseURL := fmt.Sprintf("%s%s%v", u.baseURL, "/", currentID)
 		u.URLsAllInfo[idKey] = entity.JSONAllInfo{

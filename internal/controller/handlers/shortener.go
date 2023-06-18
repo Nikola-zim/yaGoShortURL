@@ -4,6 +4,7 @@ import (
 	"encoding/binary"
 	"encoding/hex"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"log"
@@ -52,8 +53,15 @@ func (a *AddAndGetURLHandler) addURL(c *gin.Context) {
 	id, err := a.service.WriteURL(string(b), data[:8])
 	if err != nil {
 		log.Println(err)
-		c.AbortWithStatus(http.StatusBadRequest)
-		return
+		var eu *entity.ErrorURL
+		if errors.As(err, &eu) {
+			id = fmt.Sprintf("%s%s%s", a.baseURL, "/", err.Error())
+			c.String(http.StatusConflict, id)
+			return
+		} else {
+			c.AbortWithStatus(http.StatusBadRequest)
+			return
+		}
 	}
 	// Получение короткого адреса
 	id = fmt.Sprintf("%s%s%s", a.baseURL, "/", id)
@@ -112,8 +120,15 @@ func (a *AddAndGetURLHandler) addAndGetJSON(c *gin.Context) {
 	id, err := a.service.WriteURL(myJSON.URL, data[:8])
 	if err != nil {
 		log.Println(err)
-		c.AbortWithStatus(http.StatusBadRequest)
-		return
+		var eu *entity.ErrorURL
+		if errors.As(err, &eu) {
+			result.Res = fmt.Sprintf("%s%s%s", a.baseURL, "/", err.Error())
+			c.JSON(http.StatusCreated, result)
+			return
+		} else {
+			c.AbortWithStatus(http.StatusBadRequest)
+			return
+		}
 	}
 	// Вывод результата
 	result.Res = fmt.Sprintf("%s%s%s", a.baseURL, "/", id)
