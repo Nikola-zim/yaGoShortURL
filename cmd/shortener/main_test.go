@@ -8,7 +8,7 @@ import (
 	"net/http/httptest"
 	"strings"
 	"testing"
-	"yaGoShortURL/internal/components/cash"
+	"yaGoShortURL/internal/components/cache"
 	"yaGoShortURL/internal/components/filestorage"
 	"yaGoShortURL/internal/components/postgres"
 	"yaGoShortURL/internal/controller/handlers"
@@ -92,7 +92,7 @@ func TestPingRoute(t *testing.T) {
 	cfg := configInit()
 	cfg.UnitTestFlag = false
 	// Создание экземпляров компоненинтов сервиса
-	serverCash := cash.NewCash(cfg.BaseURL)
+	serverCash := cache.NewCash(cfg.BaseURL)
 	pg, err := postgres.New(cfg.PostgresURL, cfg.UsingDB)
 	// Ошибка БД
 	if err != nil {

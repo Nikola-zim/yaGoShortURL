@@ -25,7 +25,7 @@ func (m DBService) PingDB() error {
 
 // RecoverAllURL Восстановление кэша из БД
 func (m DBService) RecoverAllURL(ctx context.Context) error {
-	dataURL, err := m.db.GetAllURLFromDB(ctx)
+	dataURL, err := m.db.GetAllURL(ctx)
 	if err != nil {
 		log.Printf("internal - usecase - RecoverAllURL")
 		return err
@@ -44,7 +44,7 @@ func (m DBService) RecoverAllURL(ctx context.Context) error {
 }
 
 func (m DBService) WriteURLInDB(fullURL string, id string, userID uint64) error {
-	err := m.db.WriteURLInDB(fullURL, id, userID)
+	err := m.db.WriteURL(fullURL, id, userID)
 	if err != nil {
 		log.Printf("internal - usecase - RecoverAllURL")
 		return err

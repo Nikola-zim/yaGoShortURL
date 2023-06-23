@@ -8,7 +8,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
-	"yaGoShortURL/internal/components/cash"
+	"yaGoShortURL/internal/components/cache"
 	"yaGoShortURL/internal/components/filestorage"
 	"yaGoShortURL/internal/components/postgres"
 	"yaGoShortURL/internal/controller/handlers"
@@ -31,7 +31,7 @@ func configInit() entity.ConfigInit {
 		flag.StringVar(&cfg.BaseURL, "b", "http://localhost:8080", "Base address with port")
 	}
 	if cfg.FileStoragePath == "" {
-		flag.StringVar(&cfg.FileStoragePath, "f", "/URLStorage.json", "Constant memory file path")
+		flag.StringVar(&cfg.FileStoragePath, "f", "/url_storage.json", "Constant memory file path")
 	}
 	if cfg.PostgresURL == "" {
 		flag.StringVar(&cfg.PostgresURL, "d", "", "Postgres URL address")
@@ -57,7 +57,7 @@ func main() {
 	cfg := configInit()
 
 	// Создание экземпляров use case
-	serverCash := cash.NewCash(cfg.BaseURL)
+	serverCash := cache.NewCash(cfg.BaseURL)
 
 	// Выполнение миграций
 	if cfg.UsingDB {

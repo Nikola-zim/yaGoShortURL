@@ -1,10 +1,10 @@
-package cash
+package cache
 
 import "yaGoShortURL/internal/entity"
 
 type UrlsRW interface {
 	WriteURL(fullURL string, id []byte) (string, error)
-	ReadURLFromCash(id string) (string, error)
+	FullURL(id string) (string, error)
 	ReadAllUserURLFromCash(id []byte) ([]entity.JSONAllInfo, error)
 }
 

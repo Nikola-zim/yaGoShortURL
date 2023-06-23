@@ -9,7 +9,7 @@ type Postgres struct {
 	service DBService
 }
 
-func NewPostgres(service Cash) *Postgres {
+func NewPostgres(service Cache) *Postgres {
 	return &Postgres{
 		service: service,
 	}

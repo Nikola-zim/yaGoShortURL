@@ -33,7 +33,7 @@ func (cu *CashURLService) WriteURL(fullURL string, userIDB []byte) (string, erro
 	userID := binary.LittleEndian.Uint64(userIDB)
 
 	if cu.usingDB {
-		err = cu.pg.WriteURLInDB(fullURL, id, userID)
+		err = cu.pg.WriteURL(fullURL, id, userID)
 	} else {
 		err = cu.fileStore.WriteURLInFS(fullURL, id, userID)
 	}
@@ -43,6 +43,6 @@ func (cu *CashURLService) WriteURL(fullURL string, userIDB []byte) (string, erro
 	return id, err
 }
 
-func (cu *CashURLService) ReadURLFromCash(string string) (string, error) {
-	return cu.cash.ReadURLFromCash(string)
+func (cu *CashURLService) FullURL(string string) (string, error) {
+	return cu.cash.FullURL(string)
 }

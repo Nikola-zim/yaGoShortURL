@@ -6,7 +6,6 @@ type ErrorURL struct {
 	Err error
 }
 
-// Error добавляет поддержку интерфейса error для типа TimeError.
 func (eu *ErrorURL) Error() string {
 	return eu.URL
 }

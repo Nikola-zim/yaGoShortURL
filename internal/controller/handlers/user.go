@@ -10,7 +10,7 @@ import (
 )
 
 type UserInteract struct {
-	service Cash
+	service Cache
 }
 
 // Middleware для cookie
@@ -52,6 +52,11 @@ func (uI *UserInteract) cookieSetAndGet() gin.HandlerFunc {
 	}
 }
 
+// Middleware для cookie
+func (uI *UserInteract) authorization(c *gin.Context) {
+
+}
+
 func (uI *UserInteract) getAllUserURL(c *gin.Context) {
 	/// Получение userIdB
 	cookie, err := c.Cookie("user_id")
@@ -86,7 +91,7 @@ func (uI *UserInteract) getAllUserURL(c *gin.Context) {
 	c.JSON(http.StatusOK, userURLs)
 }
 
-func NewUserInteract(service Cash) *UserInteract {
+func NewUserInteract(service Cache) *UserInteract {
 	return &UserInteract{
 		service: service,
 	}

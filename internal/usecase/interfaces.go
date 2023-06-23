@@ -8,7 +8,7 @@ import (
 // CashURL интерфейс работы с кэшем
 type CashURL interface {
 	WriteURL(fullURL string, userIDB []byte) (string, error)
-	ReadURLFromCash(id string) (string, error)
+	FullURL(id string) (string, error)
 	ReadAllUserURLFromCash(id []byte) ([]entity.JSONAllInfo, error)
 }
 
@@ -31,8 +31,8 @@ type FileStoreURL interface {
 
 type DataBase interface {
 	PingDB() error
-	WriteURLInDB(fullURL string, id string, userID uint64) error
-	GetAllURLFromDB(ctx context.Context) ([]entity.DataURL, error)
+	WriteURL(fullURL string, id string, userID uint64) error
+	GetAllURL(ctx context.Context) ([]entity.DataURL, error)
 }
 
 type Memory interface {

@@ -5,7 +5,7 @@
 *.so
 *.dylib
 
-internal/components/filestorage/URLStorage.json
+internal/components/filestorage/url_storage.json
 
 # Test binary, built with `go test -c`
 *.test

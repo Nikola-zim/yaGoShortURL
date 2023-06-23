@@ -83,7 +83,7 @@ func NewUrls(unitTestFlag bool, fileStoragePath string) (*UrlsFilesRW, error) {
 	filename = fmt.Sprintf("%s%s", modulePath, fileStoragePath)
 
 	// Для инициализации пути в unit-тестах и использования переменных окружения
-	if unitTestFlag || fileStoragePath != "/URLStorage.json" {
+	if unitTestFlag || fileStoragePath != "/url_storage.json" {
 		filename = fileStoragePath
 	}
 

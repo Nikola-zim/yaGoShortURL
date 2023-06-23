@@ -72,7 +72,7 @@ func (a *AddAndGetURLHandler) getURL(c *gin.Context) {
 	//Получаем
 	idStr := c.Param("id")
 	id := "id:" + idStr
-	str, err := a.service.ReadURLFromCash(id)
+	str, err := a.service.FullURL(id)
 	if err != nil {
 		c.AbortWithStatus(http.StatusBadRequest)
 		log.Println(err)
@@ -97,6 +97,9 @@ func (a *AddAndGetURLHandler) addAndGetJSON(c *gin.Context) {
 	}
 	// Получение userIdB
 	cookie, err := c.Cookie("user_id")
+	if err != nil {
+		log.Println(err)
+	}
 	data := make([]byte, 8, 39)
 	// Ошибка означает что куки небыло, и нужно взять ID, который установили в запросе
 	if err != nil {
@@ -106,7 +109,6 @@ func (a *AddAndGetURLHandler) addAndGetJSON(c *gin.Context) {
 			ID := reflect.ValueOf(t).Uint()
 			//Если UserID был установлен, т.е. кука была только получена
 			if userID != 0 {
-				data = make([]byte, 8)
 				binary.LittleEndian.PutUint64(data, ID)
 			}
 		}

@@ -6,7 +6,7 @@ import (
 	"yaGoShortURL/internal/entity"
 )
 
-func (pg *Postgres) GetAllURLFromDB(ctx context.Context) ([]entity.DataURL, error) {
+func (pg *Postgres) GetAllURL(ctx context.Context) ([]entity.DataURL, error) {
 	res := make([]entity.DataURL, 0, 100)
 	// Start transaction
 	tx, err := pg.Pool.Begin(ctx)
@@ -34,34 +34,13 @@ func (pg *Postgres) GetAllURLFromDB(ctx context.Context) ([]entity.DataURL, erro
 	return res, nil
 }
 
-func (pg *Postgres) WriteURLInDB(fullURL string, id string, userID uint64) error {
+func (pg *Postgres) WriteURL(fullURL string, shortURL string, userID uint64) error {
 	ctx := context.Background()
-
-	// Start transaction
-	tx, err := pg.Pool.Begin(ctx)
-	if err != nil {
-		return err
-	}
-
-	// Defer a rollback in case anything fails.
-	defer tx.Rollback(ctx)
-
-	_, err = tx.Exec(ctx, writeURL, id, fullURL, userID)
+	_, err := pg.Pool.Exec(ctx, writeURL, shortURL, fullURL, userID)
 
 	if err != nil {
-		err = tx.Rollback(ctx)
-		if err != nil {
-			return err
-		}
-
 		log.Printf("Failed to insert url in DB")
 
-		return err
-	}
-
-	// Подтверждение транзакции
-	err = tx.Commit(ctx)
-	if err != nil {
 		return err
 	}
 

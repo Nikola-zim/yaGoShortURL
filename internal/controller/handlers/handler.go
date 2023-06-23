@@ -18,7 +18,7 @@ type addAndGetURL interface {
 
 type addAndGetURLService interface {
 	WriteURL(fullURL string, userIDB []byte) (string, error)
-	ReadURLFromCash(id string) (string, error)
+	FullURL(id string) (string, error)
 	ReadAllUserURLFromCash(id []byte) ([]entity.JSONAllInfo, error)
 }
 
@@ -31,8 +31,8 @@ type DBService interface {
 	PingDB() error
 }
 
-// Cash Собранный интерфейс для кэша
-type Cash interface {
+// Cache Собранный интерфейс для кэша
+type Cache interface {
 	addAndGetURLService
 	authUser
 	DBService
@@ -50,11 +50,11 @@ type Handler struct {
 	Postgres
 }
 
-func NewHandler(service Cash, baseURL string) *Handler {
+func NewHandler(cache Cache, baseURL string) *Handler {
 	return &Handler{
-		addAndGetURL: NewAddAndGetURLHandler(service, baseURL),
-		UserInteract: *NewUserInteract(service),
-		Postgres:     *NewPostgres(service),
+		addAndGetURL: NewAddAndGetURLHandler(cache, baseURL),
+		UserInteract: *NewUserInteract(cache),
+		Postgres:     *NewPostgres(cache),
 	}
 }
 

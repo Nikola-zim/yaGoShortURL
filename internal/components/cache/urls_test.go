@@ -1,4 +1,4 @@
-package cash
+package cache
 
 import (
 	"encoding/binary"
@@ -71,13 +71,13 @@ func TestUrls_ReadURLFromCash(t *testing.T) {
 			u := &Urls{
 				urlsMap: tt.fields.urlsMap,
 			}
-			got, err := u.ReadURLFromCash(tt.args.id)
+			got, err := u.FullURL(tt.args.id)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("ReadURLFromCash() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("FullURL() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if got != tt.want {
-				t.Errorf("ReadURLFromCash() got = %v, want %v", got, tt.want)
+				t.Errorf("FullURL() got = %v, want %v", got, tt.want)
 			}
 		})
 	}
