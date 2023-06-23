@@ -42,10 +42,10 @@ func (u *Urls) WriteURL(fullURL string, userIDB []byte) (string, error) {
 
 	// Для проверки наличия Url-ов
 	strKeyCheck := "fullURL:" + fullURL
-	fullURL, found := u.urlsMap[strKeyCheck]
+	oldURL, found := u.urlsMap[strKeyCheck]
 
 	if found {
-		return "", entity.NewErrorURL(errors.New("URL is already in memory"), fullURL)
+		return "", entity.NewErrorURL(errors.New("URL is already in memory"), oldURL)
 	}
 
 	//Всегда должнобыть четное число элементов в структуре map
