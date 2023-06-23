@@ -95,6 +95,10 @@ func (u *Urls) FullURL(id string) (string, error) {
 		return fullURL, errors.New("ошибка чтения из кеша: такого ID не существует")
 	}
 
+	if fullURL == "" {
+		return fullURL, errors.New("ошибка чтения из кеша: пустой URL")
+	}
+
 	return fullURL, nil
 }
 

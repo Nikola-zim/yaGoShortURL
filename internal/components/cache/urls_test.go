@@ -59,7 +59,6 @@ func TestUrls_ReadURLFromCash(t *testing.T) {
 				},
 			},
 			args: args{
-
 				id: "id:11",
 			},
 			want:    "",
@@ -139,7 +138,7 @@ func TestUrls_WriteURLInCash(t *testing.T) {
 			fields: fields{
 				urlsMap: map[string]string{
 					"id:0": "https://golang-blog.blogspot.com/2020/01/map-golang.html",
-					"url:https://golang-blog.blogspot.com/2020/01/map-golang.html": "https://golang-blog.blogspot.com/2020/01/map-golang.html",
+					"fullURL:https://golang-blog.blogspot.com/2020/01/map-golang.html": "https://golang-blog.blogspot.com/2020/01/map-golang.html",
 				},
 				usersUrls:   map[uint64][]string{},
 				URLsAllInfo: map[string]entity.JSONAllInfo{},
