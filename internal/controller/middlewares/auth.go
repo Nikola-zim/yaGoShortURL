@@ -1,4 +1,4 @@
-package handlers
+package middlewares
 
 import (
 	"encoding/binary"
@@ -7,14 +7,21 @@ import (
 	"log"
 	"net/http"
 	"reflect"
+	"yaGoShortURL/internal/usecase"
 )
 
 type UserInteract struct {
-	service Cache
+	service usecase.Cache
+}
+
+func NewUserInteract(service usecase.Cache) *UserInteract {
+	return &UserInteract{
+		service: service,
+	}
 }
 
 // Middleware для cookie
-func (uI *UserInteract) cookieSetAndGet() gin.HandlerFunc {
+func (uI *UserInteract) CookieSetAndGet() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		cookie, err := c.Cookie("user_id")
 		if err != nil {
@@ -52,16 +59,11 @@ func (uI *UserInteract) cookieSetAndGet() gin.HandlerFunc {
 	}
 }
 
-// Middleware для cookie
-func (uI *UserInteract) authorization(c *gin.Context) {
-
-}
-
-func (uI *UserInteract) getAllUserURL(c *gin.Context) {
+func (uI *UserInteract) GetAllUserURL(c *gin.Context) {
 	/// Получение userIdB
 	cookie, err := c.Cookie("user_id")
 	data := make([]byte, 8, 39)
-	// Ошибка означает, что куки небыло, и нужно взять ID, который установили в запросе
+	// Ошибка означает, что куки не было, и нужно взять ID, который установили в запросе
 	if err != nil {
 		userID, _ := c.Get("user_ID")
 		switch t := userID.(type) {
@@ -89,10 +91,4 @@ func (uI *UserInteract) getAllUserURL(c *gin.Context) {
 		c.AbortWithStatus(http.StatusNoContent)
 	}
 	c.JSON(http.StatusOK, userURLs)
-}
-
-func NewUserInteract(service Cache) *UserInteract {
-	return &UserInteract{
-		service: service,
-	}
 }

@@ -62,7 +62,7 @@ func (aU *AuthUser) AddUser() (string, uint64, error) {
 	return cookieStr, currentUserID, nil
 }
 
-// генератор вектора для секретного ключа
+// Генератор вектора для секретного ключа.
 func generateRandom(size int) ([]byte, error) {
 	b := make([]byte, size)
 	_, err := rand.Read(b)
