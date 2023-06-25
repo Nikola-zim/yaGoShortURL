@@ -1,7 +1,6 @@
 package usecase
 
 import (
-	"encoding/binary"
 	"yaGoShortURL/internal/entity"
 )
 
@@ -21,26 +20,25 @@ func NewCashURLService(cash CashURL, fileStore FileStoreURL, pg DataBase, usingD
 	}
 }
 
-func (cu *CashURLService) ReadAllUserURLFromCash(id []byte) ([]entity.JSONAllInfo, error) {
+func (cu *CashURLService) ReadAllUserURLFromCash(id uint64) ([]entity.JSONAllInfo, error) {
 	return cu.cash.ReadAllUserURLFromCash(id)
 }
 
-func (cu *CashURLService) WriteURL(fullURL string, userIDB []byte) (string, error) {
-	id, err := cu.cash.WriteURL(fullURL, userIDB)
+func (cu *CashURLService) WriteURL(fullURL string, userID uint64) (string, error) {
+	shortURL, err := cu.cash.WriteURL(fullURL, userID)
 	if err != nil {
 		return "", err
 	}
-	userID := binary.LittleEndian.Uint64(userIDB)
 
 	if cu.usingDB {
-		err = cu.pg.WriteURL(fullURL, id, userID)
+		err = cu.pg.WriteURL(fullURL, shortURL, userID)
 	} else {
-		err = cu.fileStore.WriteURLInFS(fullURL, id, userID)
+		err = cu.fileStore.WriteURLInFS(fullURL, shortURL, userID)
 	}
 	if err != nil {
 		return "", err
 	}
-	return id, err
+	return shortURL, err
 }
 
 func (cu *CashURLService) FullURL(string string) (string, error) {

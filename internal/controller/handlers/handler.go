@@ -17,9 +17,9 @@ type addAndGetURL interface {
 }
 
 type addAndGetURLService interface {
-	WriteURL(fullURL string, userIDB []byte) (string, error)
+	WriteURL(fullURL string, id uint64) (string, error)
 	FullURL(id string) (string, error)
-	ReadAllUserURLFromCash(id []byte) ([]entity.JSONAllInfo, error)
+	ReadAllUserURLFromCash(id uint64) ([]entity.JSONAllInfo, error)
 }
 
 type authUser interface {
@@ -157,7 +157,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 		shorten.POST("shorten/batch", h.addAndGetBatchURL)
 	}
 
-	// батчинг
+	// Батчинг
 	shortenBatching := router.Group("/ping")
 	{
 		shortenBatching.GET("", h.pingDB)

@@ -2,7 +2,6 @@ package usecase
 
 import (
 	"context"
-	"encoding/binary"
 	"log"
 )
 
@@ -32,9 +31,7 @@ func (m DBService) RecoverAllURL(ctx context.Context) error {
 	}
 
 	for _, data := range dataURL {
-		userIDB := make([]byte, 8)
-		binary.LittleEndian.PutUint64(userIDB, data.UserID)
-		_, err = m.cash.WriteURL(data.URL, userIDB)
+		_, err = m.cash.WriteURL(data.URL, data.UserID)
 		if err != nil {
 			return err
 		}

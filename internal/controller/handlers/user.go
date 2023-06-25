@@ -79,8 +79,8 @@ func (uI *UserInteract) getAllUserURL(c *gin.Context) {
 			c.AbortWithStatus(http.StatusInternalServerError)
 		}
 	}
-	// data[:8] - байты id-шника
-	userURLs, err := uI.service.ReadAllUserURLFromCash(data[:8])
+	userID := binary.LittleEndian.Uint64(data[:8])
+	userURLs, err := uI.service.ReadAllUserURLFromCash(userID)
 	if err != nil {
 		log.Println("Ошибка во время получения всех URL юзера")
 		c.AbortWithStatus(http.StatusInternalServerError)

@@ -1,7 +1,5 @@
 package usecase
 
-import "encoding/binary"
-
 type MemoryService struct {
 	cash      CashURL
 	fileStore FileStoreURL
@@ -22,9 +20,7 @@ func (m MemoryService) RecoverAllURL() error {
 		if err != nil || url == "" {
 			break
 		}
-		userIDB := make([]byte, 8)
-		binary.LittleEndian.PutUint64(userIDB, userID)
-		_, err = m.cash.WriteURL(url, userIDB)
+		_, err = m.cash.WriteURL(url, userID)
 		if err != nil {
 			return err
 		}

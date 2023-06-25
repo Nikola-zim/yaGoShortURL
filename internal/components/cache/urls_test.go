@@ -1,7 +1,6 @@
 package cache
 
 import (
-	"encoding/binary"
 	"testing"
 	"yaGoShortURL/internal/entity"
 )
@@ -55,7 +54,6 @@ func TestUrls_ReadURLFromCash(t *testing.T) {
 				urlsMap: map[string]string{
 					"id:0":  "https://golang-blog.blogspot.com/2020/01/map-golang.html",
 					"id:30": "https://go-traps.appspot.com/#slice-traversal",
-					"id:11": "",
 				},
 			},
 			args: args{
@@ -196,8 +194,7 @@ func TestUrls_WriteURLInCash(t *testing.T) {
 				URLsAllInfo: tt.fields.URLsAllInfo,
 				baseURL:     tt.fields.baseURL,
 			}
-			userIDB := make([]byte, 8)
-			binary.LittleEndian.PutUint64(userIDB, tt.args.userID)
+			userIDB := tt.args.userID
 			got, err := u.WriteURL(tt.args.fullURL, userIDB)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("WriteURLInFS() error = %v, wantErr %v", err, tt.wantErr)

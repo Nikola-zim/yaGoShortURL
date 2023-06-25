@@ -9,8 +9,8 @@ type JSONRes struct {
 }
 
 type JSONAllInfo struct {
-	BaseURL string `json:"short_url"`
-	FullURL string `json:"original_url"`
+	ShortURL string `json:"short_url"`
+	FullURL  string `json:"original_url"`
 }
 
 // BatchAPI - JSON API.

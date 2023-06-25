@@ -3,9 +3,9 @@ package cache
 import "yaGoShortURL/internal/entity"
 
 type UrlsRW interface {
-	WriteURL(fullURL string, id []byte) (string, error)
+	WriteURL(fullURL string, id uint64) (string, error)
 	FullURL(id string) (string, error)
-	ReadAllUserURLFromCash(id []byte) ([]entity.JSONAllInfo, error)
+	ReadAllUserURLFromCash(id uint64) ([]entity.JSONAllInfo, error)
 }
 
 type userGetAdd interface {

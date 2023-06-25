@@ -49,8 +49,10 @@ func (a *AddAndGetURLHandler) addURL(c *gin.Context) {
 		}
 	}
 
-	// data[:8] - байты id-шника
-	id, err := a.service.WriteURL(string(b), data[:8])
+	// Получение id в виде числа
+	userID := binary.LittleEndian.Uint64(data[:8])
+
+	id, err := a.service.WriteURL(string(b), userID)
 	if err != nil {
 		log.Println(err)
 		var eu *entity.ErrorURL
@@ -70,8 +72,7 @@ func (a *AddAndGetURLHandler) addURL(c *gin.Context) {
 
 func (a *AddAndGetURLHandler) getURL(c *gin.Context) {
 	//Получаем
-	idStr := c.Param("id")
-	id := "id:" + idStr
+	id := c.Param("id")
 	str, err := a.service.FullURL(id)
 	if err != nil {
 		c.AbortWithStatus(http.StatusBadRequest)
@@ -89,7 +90,7 @@ func (a *AddAndGetURLHandler) addAndGetJSON(c *gin.Context) {
 		c.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
-	//это для прохождение проверки использования unmarshal
+	//это для прохождения проверки использования unmarshal
 	b, err := c.GetRawData()
 	log.Println(json.Unmarshal(b, &result))
 	if err != nil {
@@ -118,8 +119,11 @@ func (a *AddAndGetURLHandler) addAndGetJSON(c *gin.Context) {
 			c.AbortWithStatus(http.StatusInternalServerError)
 		}
 	}
+	// Получение id в виде числа
+	userID := binary.LittleEndian.Uint64(data[:8])
+
 	//Запись в кеш
-	id, err := a.service.WriteURL(myJSON.URL, data[:8])
+	id, err := a.service.WriteURL(myJSON.URL, userID)
 	if err != nil {
 		log.Println(err)
 		var eu *entity.ErrorURL
@@ -145,7 +149,7 @@ func (a *AddAndGetURLHandler) addAndGetBatchURL(c *gin.Context) {
 		c.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
-	//это для прохождение проверки использования unmarshal
+	//это для прохождения проверки использования unmarshal
 	b, err := c.GetRawData()
 	log.Println(json.Unmarshal(b, &result))
 	if err != nil {
@@ -154,7 +158,7 @@ func (a *AddAndGetURLHandler) addAndGetBatchURL(c *gin.Context) {
 	// Получение userIDByte
 	cookie, err := c.Cookie("user_id")
 	data := make([]byte, 8, 39)
-	// Ошибка означает что куки небыло, и нужно взять ID, который установили в запросе
+	// Ошибка означает что куки не было, и нужно взять ID, который установили в запросе
 	if err != nil {
 		userID, _ := c.Get("user_ID")
 		switch t := userID.(type) {
@@ -177,7 +181,9 @@ func (a *AddAndGetURLHandler) addAndGetBatchURL(c *gin.Context) {
 	res := make([]entity.ResBatchAPI, 0, 100)
 	for _, url := range myJSON {
 		var ans entity.ResBatchAPI
-		id, err := a.service.WriteURL(url.OriginalURL, data[:8])
+		// Получение id в виде числа
+		userID := binary.LittleEndian.Uint64(data[:8])
+		id, err := a.service.WriteURL(url.OriginalURL, userID)
 		if err != nil {
 			log.Println(err)
 			c.AbortWithStatus(http.StatusBadRequest)
