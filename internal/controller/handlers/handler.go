@@ -19,7 +19,7 @@ type addAndGetURL interface {
 type addAndGetURLService interface {
 	WriteURL(fullURL string, id uint64) (string, error)
 	FullURL(id string) (string, error)
-	ReadAllUserURLFromCash(id uint64) ([]entity.JSONAllInfo, error)
+	ReadAllUserURL(id uint64) ([]entity.JSONAllInfo, error)
 }
 
 type authUser interface {

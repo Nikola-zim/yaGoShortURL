@@ -6,11 +6,11 @@ import (
 )
 
 type DBService struct {
-	cash CashURL
+	cash CacheURL
 	db   DataBase
 }
 
-func NewDBService(cash CashURL, dataBase DataBase) *DBService {
+func NewDBService(cash CacheURL, dataBase DataBase) *DBService {
 	return &DBService{
 		cash: cash,
 		db:   dataBase,

@@ -111,7 +111,7 @@ func main() {
 	// We received an interrupt signal, shut down.
 
 	// Мягкое завершение
-	if err := srv.Shutdown(ctx); err != nil {
+	if err = srv.Shutdown(ctx); err != nil {
 		// Error from closing listeners, or context timeout:
 		log.Printf("HTTP server Shutdown: %v", err)
 	}

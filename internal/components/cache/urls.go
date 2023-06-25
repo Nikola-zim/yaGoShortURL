@@ -101,7 +101,7 @@ func (u *Urls) FullURL(id string) (string, error) {
 	return URLInfo.FullURL, nil
 }
 
-func (u *Urls) ReadAllUserURLFromCash(userID uint64) ([]entity.JSONAllInfo, error) {
+func (u *Urls) ReadAllUserURL(userID uint64) ([]entity.JSONAllInfo, error) {
 	// Слайс для результата, в нем все URL от User-а
 	userURLs := make([]entity.JSONAllInfo, 0, defaultURLsNumber)
 
@@ -112,18 +112,18 @@ func (u *Urls) ReadAllUserURLFromCash(userID uint64) ([]entity.JSONAllInfo, erro
 	_, ok := u.usersUrls[userID]
 	if !ok {
 		return userURLs, nil
-	} else {
-		userURLsID := u.usersUrls[userID]
-		for _, id := range userURLsID {
-			currentURLsAllInfo, err := u.URLs.IDKey[id]
-			if !err {
-				return userURLs, errors.New("ошибка чтения из кеша всех URL пользователя: такого ID не существует")
-			}
-			if currentURLsAllInfo.FullURL == "" {
-				return userURLs, errors.New("ошибка чтения из кеша всех URL пользователя: пустой URL")
-			}
-			userURLs = append(userURLs, currentURLsAllInfo)
-		}
-		return userURLs, nil
 	}
+	userURLsID := u.usersUrls[userID]
+	for _, id := range userURLsID {
+		currentURLsAllInfo, err := u.URLs.IDKey[id]
+		if !err {
+			return userURLs, errors.New("ошибка чтения из кеша всех URL пользователя: такого ID не существует")
+		}
+		if currentURLsAllInfo.FullURL == "" {
+			return userURLs, errors.New("ошибка чтения из кеша всех URL пользователя: пустой URL")
+		}
+		userURLs = append(userURLs, currentURLsAllInfo)
+	}
+
+	return userURLs, nil
 }

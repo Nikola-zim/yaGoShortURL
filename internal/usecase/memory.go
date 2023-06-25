@@ -1,13 +1,13 @@
 package usecase
 
 type MemoryService struct {
-	cash      CashURL
+	cache     CacheURL
 	fileStore FileStoreURL
 }
 
-func NewMemoryService(cash CashURL, fileStore FileStoreURL) *MemoryService {
+func NewMemoryService(cache CacheURL, fileStore FileStoreURL) *MemoryService {
 	return &MemoryService{
-		cash:      cash,
+		cache:     cache,
 		fileStore: fileStore,
 	}
 }
@@ -20,7 +20,7 @@ func (m MemoryService) RecoverAllURL() error {
 		if err != nil || url == "" {
 			break
 		}
-		_, err = m.cash.WriteURL(url, userID)
+		_, err = m.cache.WriteURL(url, userID)
 		if err != nil {
 			return err
 		}

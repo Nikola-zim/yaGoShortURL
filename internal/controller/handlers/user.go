@@ -80,7 +80,7 @@ func (uI *UserInteract) getAllUserURL(c *gin.Context) {
 		}
 	}
 	userID := binary.LittleEndian.Uint64(data[:8])
-	userURLs, err := uI.service.ReadAllUserURLFromCash(userID)
+	userURLs, err := uI.service.ReadAllUserURL(userID)
 	if err != nil {
 		log.Println("Ошибка во время получения всех URL юзера")
 		c.AbortWithStatus(http.StatusInternalServerError)

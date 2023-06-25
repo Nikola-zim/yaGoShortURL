@@ -7,7 +7,7 @@ type Service struct {
 	DBService
 }
 
-func NewService(cash Cash, fileStorage FileStoreURL, dataBase DataBase, usingDB bool) *Service {
+func NewService(cash Cache, fileStorage FileStoreURL, dataBase DataBase, usingDB bool) *Service {
 	return &Service{
 		CashURLService: *NewCashURLService(cash, fileStorage, dataBase, usingDB),
 		MemoryService:  *NewMemoryService(cash, fileStorage),

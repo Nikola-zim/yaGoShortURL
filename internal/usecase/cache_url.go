@@ -5,13 +5,13 @@ import (
 )
 
 type CashURLService struct {
-	cash      CashURL
+	cash      CacheURL
 	fileStore FileStoreURL
 	pg        DataBase
 	usingDB   bool
 }
 
-func NewCashURLService(cash CashURL, fileStore FileStoreURL, pg DataBase, usingDB bool) *CashURLService {
+func NewCashURLService(cash CacheURL, fileStore FileStoreURL, pg DataBase, usingDB bool) *CashURLService {
 	return &CashURLService{
 		cash:      cash,
 		fileStore: fileStore,
@@ -20,8 +20,8 @@ func NewCashURLService(cash CashURL, fileStore FileStoreURL, pg DataBase, usingD
 	}
 }
 
-func (cu *CashURLService) ReadAllUserURLFromCash(id uint64) ([]entity.JSONAllInfo, error) {
-	return cu.cash.ReadAllUserURLFromCash(id)
+func (cu *CashURLService) ReadAllUserURL(id uint64) ([]entity.JSONAllInfo, error) {
+	return cu.cash.ReadAllUserURL(id)
 }
 
 func (cu *CashURLService) WriteURL(fullURL string, userID uint64) (string, error) {
@@ -33,7 +33,7 @@ func (cu *CashURLService) WriteURL(fullURL string, userID uint64) (string, error
 	if cu.usingDB {
 		err = cu.pg.WriteURL(fullURL, shortURL, userID)
 	} else {
-		err = cu.fileStore.WriteURLInFS(fullURL, shortURL, userID)
+		err = cu.fileStore.WriteURL(fullURL, shortURL, userID)
 	}
 	if err != nil {
 		return "", err

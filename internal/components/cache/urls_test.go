@@ -243,11 +243,11 @@ func TestUrls_WriteURLInCash(t *testing.T) {
 			userIDB := tt.args.userID
 			got, err := u.WriteURL(tt.args.fullURL, userIDB)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("WriteURLInFS() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("WriteURL() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if got != tt.want {
-				t.Errorf("WriteURLInFS() got = %v, want %v", got, tt.want)
+				t.Errorf("WriteURL() got = %v, want %v", got, tt.want)
 			}
 		})
 	}

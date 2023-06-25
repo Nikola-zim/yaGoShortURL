@@ -5,11 +5,11 @@ import (
 	"yaGoShortURL/internal/entity"
 )
 
-// CashURL интерфейс работы с кэшем
-type CashURL interface {
+// CacheURL интерфейс работы с кэшем
+type CacheURL interface {
 	WriteURL(fullURL string, id uint64) (string, error)
 	FullURL(id string) (string, error)
-	ReadAllUserURLFromCash(id uint64) ([]entity.JSONAllInfo, error)
+	ReadAllUserURL(id uint64) ([]entity.JSONAllInfo, error)
 }
 
 type AuthUser interface {
@@ -17,15 +17,15 @@ type AuthUser interface {
 	AddUser() (string, uint64, error)
 }
 
-// Cash Собранный интерфейс для кэша
-type Cash interface {
-	CashURL
+// Cache Собранный интерфейс для кэша
+type Cache interface {
+	CacheURL
 	AuthUser
 }
 
 // FileStoreURL интерфейс работы с файлами
 type FileStoreURL interface {
-	WriteURLInFS(fullURL string, id string, userID uint64) error
+	WriteURL(fullURL string, id string, userID uint64) error
 	ReadNextURL() (string, uint64, error)
 }
 
