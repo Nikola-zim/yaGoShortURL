@@ -184,11 +184,11 @@ func (a *AddAndGetURLHandler) GetAllUserURL(c *gin.Context) {
 
 func (a *AddAndGetURLHandler) DeleteUserURL(c *gin.Context) {
 	var requestBody entity.DeleteList
-	if err := c.ShouldBindJSON(&requestBody); err != nil {
+	if err := c.ShouldBindJSON(&requestBody.List); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 	list := requestBody.List
 	log.Printf("--------->List to delete: %s", list)
-	c.String(http.StatusGone, fmt.Sprintf("l:%s", list))
+	c.String(http.StatusAccepted, fmt.Sprintf("l:%s", list))
 }

@@ -25,5 +25,5 @@ type ResBatchAPI struct {
 }
 
 type DeleteList struct {
-	List []string `json:"list"`
+	List []string
 }
