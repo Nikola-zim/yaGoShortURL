@@ -1,12 +1,8 @@
 package middlewares
 
 import (
-	"encoding/binary"
-	"encoding/hex"
 	"github.com/gin-gonic/gin"
 	"log"
-	"net/http"
-	"reflect"
 	"yaGoShortURL/internal/usecase"
 )
 
@@ -57,38 +53,4 @@ func (uI *UserInteract) CookieSetAndGet() gin.HandlerFunc {
 		// Передача запроса в handler
 		c.Next()
 	}
-}
-
-func (uI *UserInteract) GetAllUserURL(c *gin.Context) {
-	/// Получение userIdB
-	cookie, err := c.Cookie("user_id")
-	data := make([]byte, 8, 39)
-	// Ошибка означает, что куки не было, и нужно взять ID, который установили в запросе
-	if err != nil {
-		userID, _ := c.Get("user_ID")
-		switch t := userID.(type) {
-		case uint64:
-			ID := reflect.ValueOf(t).Uint()
-			//Если UserID был установлен, т.е. кука была только получена
-			if userID != 0 {
-				data = make([]byte, 8)
-				binary.LittleEndian.PutUint64(data, ID)
-			}
-		}
-	} else {
-		data, err = hex.DecodeString(cookie)
-		if err != nil {
-			c.AbortWithStatus(http.StatusInternalServerError)
-		}
-	}
-	userID := binary.LittleEndian.Uint64(data[:8])
-	userURLs, err := uI.service.ReadAllUserURL(userID)
-	if err != nil {
-		log.Println("Ошибка во время получения всех URL юзера")
-		c.AbortWithStatus(http.StatusInternalServerError)
-	}
-	if len(userURLs) == 0 {
-		c.AbortWithStatus(http.StatusNoContent)
-	}
-	c.JSON(http.StatusOK, userURLs)
 }

@@ -11,6 +11,8 @@ type addAndGetURL interface {
 	getURL(c *gin.Context)
 	addAndGetJSON(c *gin.Context)
 	addAndGetBatchURL(c *gin.Context)
+	GetAllUserURL(c *gin.Context)
+	DeleteUserURL(c *gin.Context)
 }
 
 type addAndGetURLService interface {
@@ -74,7 +76,8 @@ func (h *Handler) InitRoutes() *gin.Engine {
 	shorten.Use(h.UserInteract.CookieSetAndGet())
 	{
 		shorten.POST("shorten", h.addAndGetJSON)
-		shorten.GET("user/urls", h.UserInteract.GetAllUserURL)
+		shorten.GET("user/urls", h.GetAllUserURL)
+		shorten.DELETE("user/urls", h.DeleteUserURL)
 		shorten.POST("shorten/batch", h.addAndGetBatchURL)
 	}
 

@@ -1,10 +1,10 @@
 package entity
 
-type JSONApi struct {
+type InputJSON struct {
 	URL string
 }
 
-type JSONRes struct {
+type ResultJSON struct {
 	Res string `json:"result"`
 }
 
@@ -22,4 +22,8 @@ type BatchAPI struct {
 type ResBatchAPI struct {
 	CorrelationID string `json:"correlation_id"`
 	ShortURL      string `json:"short_url"`
+}
+
+type DeleteList struct {
+	List []string `json:"list"`
 }

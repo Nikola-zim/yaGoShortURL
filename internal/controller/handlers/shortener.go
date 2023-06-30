@@ -97,9 +97,9 @@ func (a *AddAndGetURLHandler) getURL(c *gin.Context) {
 }
 
 func (a *AddAndGetURLHandler) addAndGetJSON(c *gin.Context) {
-	var myJSON entity.JSONApi
-	var result entity.JSONRes
-	err := c.ShouldBindJSON(&myJSON)
+	var input entity.InputJSON
+	var result entity.ResultJSON
+	err := c.ShouldBindJSON(&input)
 	if err != nil {
 		c.AbortWithStatus(http.StatusBadRequest)
 		return
@@ -114,7 +114,7 @@ func (a *AddAndGetURLHandler) addAndGetJSON(c *gin.Context) {
 	userID := a.getUserID(c)
 
 	//Запись в кеш
-	id, err := a.service.WriteURL(myJSON.URL, userID)
+	id, err := a.service.WriteURL(input.URL, userID)
 	if err != nil {
 		log.Println(err)
 		var eu *entity.ErrorURL
@@ -134,7 +134,7 @@ func (a *AddAndGetURLHandler) addAndGetJSON(c *gin.Context) {
 
 func (a *AddAndGetURLHandler) addAndGetBatchURL(c *gin.Context) {
 	var myJSON []entity.BatchAPI
-	var result entity.JSONRes
+	var result entity.ResultJSON
 	err := c.ShouldBindJSON(&myJSON)
 	if err != nil {
 		c.AbortWithStatus(http.StatusBadRequest)
@@ -165,4 +165,30 @@ func (a *AddAndGetURLHandler) addAndGetBatchURL(c *gin.Context) {
 	}
 	// Вывод результата
 	c.JSON(http.StatusCreated, res)
+}
+
+func (a *AddAndGetURLHandler) GetAllUserURL(c *gin.Context) {
+	// Получение user id
+	userID := a.getUserID(c)
+
+	userURLs, err := a.service.ReadAllUserURL(userID)
+	if err != nil {
+		log.Println("Ошибка во время получения всех URL юзера")
+		c.AbortWithStatus(http.StatusInternalServerError)
+	}
+	if len(userURLs) == 0 {
+		c.AbortWithStatus(http.StatusNoContent)
+	}
+	c.JSON(http.StatusOK, userURLs)
+}
+
+func (a *AddAndGetURLHandler) DeleteUserURL(c *gin.Context) {
+	var requestBody entity.DeleteList
+	if err := c.ShouldBindJSON(&requestBody); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	list := requestBody.List
+	log.Printf("--------->List to delete: %s", list)
+	c.String(http.StatusGone, fmt.Sprintf("l:%s", list))
 }
