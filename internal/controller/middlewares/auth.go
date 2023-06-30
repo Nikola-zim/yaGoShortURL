@@ -20,7 +20,7 @@ func NewUserInteract(service usecase.Cache) *UserInteract {
 	}
 }
 
-// Middleware для cookie
+// CookieSetAndGet - middleware для cookie.
 func (uI *UserInteract) CookieSetAndGet() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		cookie, err := c.Cookie("user_id")
