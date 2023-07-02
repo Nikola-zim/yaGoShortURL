@@ -137,7 +137,7 @@ func (u *Urls) DeleteURLs(userID uint64, IDs []string) error {
 	for _, id := range IDs {
 		for _, idUser := range userURLsID {
 			if id == idUser {
-				currentURLsAllInfo, _ := u.URLs.IDKey[idUser]
+				currentURLsAllInfo := u.URLs.IDKey[idUser]
 				URLAllInfo := entity.JSONAllInfo{
 					ShortURL:  currentURLsAllInfo.ShortURL,
 					FullURL:   currentURLsAllInfo.FullURL,
