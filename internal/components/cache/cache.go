@@ -4,8 +4,9 @@ import "yaGoShortURL/internal/entity"
 
 type UrlsRW interface {
 	WriteURL(fullURL string, id uint64) (string, error)
-	FullURL(id string) (string, error)
+	FullURL(id string) (string, bool, error)
 	ReadAllUserURL(id uint64) ([]entity.JSONAllInfo, error)
+	DeleteURLs(userID uint64, IDs []string) error
 }
 
 type userGetAdd interface {

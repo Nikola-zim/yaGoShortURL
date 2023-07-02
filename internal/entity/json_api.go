@@ -9,8 +9,9 @@ type ResultJSON struct {
 }
 
 type JSONAllInfo struct {
-	ShortURL string `json:"short_url"`
-	FullURL  string `json:"original_url"`
+	ShortURL  string `json:"short_url"`
+	FullURL   string `json:"original_url"`
+	IsDeleted bool   `json:"is_deleted"`
 }
 
 // BatchAPI - JSON API.

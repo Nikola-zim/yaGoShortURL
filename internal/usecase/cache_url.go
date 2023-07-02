@@ -41,6 +41,17 @@ func (cu *CashURLService) WriteURL(fullURL string, userID uint64) (string, error
 	return shortURL, err
 }
 
-func (cu *CashURLService) FullURL(string string) (string, error) {
-	return cu.cash.FullURL(string)
+func (cu *CashURLService) FullURL(id string) (string, bool, error) {
+	return cu.cash.FullURL(id)
+}
+
+func (cu *CashURLService) DeleteURLs(userID uint64, IDs []string) error {
+	err := cu.cash.DeleteURLs(userID, IDs)
+	if err != nil {
+		return err
+	}
+	if cu.usingDB {
+		err = cu.pg.DeleteURLsDB(userID, IDs)
+	}
+	return err
 }

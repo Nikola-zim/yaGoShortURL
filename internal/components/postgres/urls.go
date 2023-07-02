@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	"github.com/jackc/pgx/v5"
 	"log"
 	"yaGoShortURL/internal/entity"
 )
@@ -41,6 +42,35 @@ func (pg *Postgres) WriteURL(fullURL string, shortURL string, userID uint64) err
 	if err != nil {
 		log.Printf("Failed to insert url in DB")
 
+		return err
+	}
+
+	return nil
+}
+
+func (pg *Postgres) DeleteURLsDB(userID uint64, IDs []string) error {
+	ctx := context.Background()
+	// Start transaction
+	tx, err := pg.Pool.Begin(ctx)
+	if err != nil {
+		return err
+	}
+	// Defer a rollback in case anything fails.
+	defer func(tx pgx.Tx, ctx context.Context) {
+		err = tx.Rollback(ctx)
+	}(tx, ctx)
+
+	for _, id := range IDs {
+		_, err = pg.Pool.Exec(ctx, deleteURL, userID, id)
+		if err != nil {
+			log.Printf("Failed to delete url in DB")
+
+			return err
+		}
+	}
+	// Подтверждение транзакции
+	err = tx.Commit(ctx)
+	if err != nil {
 		return err
 	}
 

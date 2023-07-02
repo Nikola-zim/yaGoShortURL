@@ -62,8 +62,9 @@ func (u *Urls) WriteURL(fullURL string, userID uint64) (string, error) {
 	// Составим полный адрес сокращенного URL.
 	ShortURL := fmt.Sprintf("%s%s%v", u.baseURL, "/", u.URLs.Counter)
 	URLAllInfo := entity.JSONAllInfo{
-		ShortURL: ShortURL,
-		FullURL:  fullURL,
+		ShortURL:  ShortURL,
+		FullURL:   fullURL,
+		IsDeleted: false,
 	}
 	idKey := strconv.Itoa(u.URLs.Counter)
 	u.URLs.Counter++
@@ -89,16 +90,16 @@ func (u *Urls) WriteURL(fullURL string, userID uint64) (string, error) {
 	return idKey, nil
 }
 
-func (u *Urls) FullURL(id string) (string, error) {
+func (u *Urls) FullURL(id string) (string, bool, error) {
 	u.mux.RLock()
 	defer u.mux.RUnlock()
 	URLInfo, found := u.URLs.IDKey[id]
 
 	if !found {
-		return URLInfo.FullURL, errors.New("ошибка чтения из кеша: такого ID не существует")
+		return URLInfo.FullURL, false, errors.New("ошибка чтения из кеша: такого ID не существует")
 	}
 
-	return URLInfo.FullURL, nil
+	return URLInfo.FullURL, URLInfo.IsDeleted, nil
 }
 
 func (u *Urls) ReadAllUserURL(userID uint64) ([]entity.JSONAllInfo, error) {
@@ -126,4 +127,27 @@ func (u *Urls) ReadAllUserURL(userID uint64) ([]entity.JSONAllInfo, error) {
 	}
 
 	return userURLs, nil
+}
+
+func (u *Urls) DeleteURLs(userID uint64, IDs []string) error {
+	u.mux.Lock()
+	defer u.mux.Unlock()
+	userURLsID := u.usersUrls[userID]
+
+	for _, id := range IDs {
+		for _, idUser := range userURLsID {
+			if id == idUser {
+				currentURLsAllInfo, _ := u.URLs.IDKey[idUser]
+				URLAllInfo := entity.JSONAllInfo{
+					ShortURL:  currentURLsAllInfo.ShortURL,
+					FullURL:   currentURLsAllInfo.FullURL,
+					IsDeleted: true,
+				}
+				u.URLs.IDKey[idUser] = URLAllInfo
+				break
+			}
+		}
+	}
+
+	return nil
 }

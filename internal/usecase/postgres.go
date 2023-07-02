@@ -48,3 +48,7 @@ func (m DBService) WriteURLInDB(fullURL string, id string, userID uint64) error 
 	}
 	return nil
 }
+
+func (m DBService) DeleteURLsDB(userID uint64, IDs []string) error {
+	return nil
+}

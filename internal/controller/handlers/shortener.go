@@ -87,12 +87,15 @@ func (a *AddAndGetURLHandler) addURL(c *gin.Context) {
 func (a *AddAndGetURLHandler) getURL(c *gin.Context) {
 	//Получаем
 	id := c.Param("id")
-	str, err := a.service.FullURL(id)
+	str, deleted, err := a.service.FullURL(id)
 	if err != nil {
 		c.AbortWithStatus(http.StatusBadRequest)
 		log.Println(err)
-		return
 	}
+	if deleted {
+		c.AbortWithStatus(http.StatusGone)
+	}
+
 	c.Redirect(http.StatusTemporaryRedirect, str)
 }
 
@@ -183,12 +186,17 @@ func (a *AddAndGetURLHandler) GetAllUserURL(c *gin.Context) {
 }
 
 func (a *AddAndGetURLHandler) DeleteUserURL(c *gin.Context) {
+	// Получение user id
+	userID := a.getUserID(c)
 	var requestBody entity.DeleteList
 	if err := c.ShouldBindJSON(&requestBody.List); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	list := requestBody.List
-	log.Printf("--------->List to delete: %s", list)
-	c.String(http.StatusAccepted, fmt.Sprintf("l:%s", list))
+	err := a.service.DeleteURLs(userID, requestBody.List)
+	if err != nil {
+		log.Printf("Ошибка во время удаления URL: %s\n", err)
+		c.AbortWithStatus(http.StatusInternalServerError)
+	}
+	c.String(http.StatusAccepted, "")
 }

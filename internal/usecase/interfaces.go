@@ -8,8 +8,9 @@ import (
 // CacheURL интерфейс работы с кэшем
 type CacheURL interface {
 	WriteURL(fullURL string, id uint64) (string, error)
-	FullURL(id string) (string, error)
+	FullURL(id string) (string, bool, error)
 	ReadAllUserURL(id uint64) ([]entity.JSONAllInfo, error)
+	DeleteURLs(userID uint64, IDs []string) error
 }
 
 type AuthUser interface {
@@ -33,6 +34,7 @@ type DataBase interface {
 	PingDB() error
 	WriteURL(fullURL string, id string, userID uint64) error
 	GetAllURL(ctx context.Context) ([]entity.DataURL, error)
+	DeleteURLsDB(userID uint64, IDs []string) error
 }
 
 type Memory interface {
