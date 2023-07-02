@@ -54,10 +54,10 @@ func (pg *Postgres) DeleteURLsDB(userID uint64, IDs []string) error {
 	ctx := context.Background()
 	var db *pgxpool.Pool
 	db, err := pgxpool.Connect(ctx, pg.url)
-	defer db.Close()
 	if err != nil {
 		return err
 	}
+	defer db.Close()
 
 	tx, err := db.Begin(ctx)
 	if err != nil {
