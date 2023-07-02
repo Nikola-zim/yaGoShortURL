@@ -12,7 +12,7 @@ import (
 )
 
 const (
-	_defaultMaxPoolSize  = 2
+	_defaultMaxPoolSize  = 20
 	_defaultConnAttempts = 10
 	_defaultConnTimeout  = time.Second
 )
@@ -22,6 +22,7 @@ type Postgres struct {
 	maxPoolSize  int
 	connAttempts int
 	connTimeout  time.Duration
+	url          string
 
 	Builder squirrel.StatementBuilderType
 	Pool    *pgxpool.Pool
@@ -35,6 +36,7 @@ func New(url string, usingDB bool, opts ...Option) (*Postgres, error) {
 		connTimeout:  _defaultConnTimeout,
 	}
 	if usingDB {
+		pg.url = url
 		// Установка кастомных опций
 		for _, opt := range opts {
 			opt(pg)

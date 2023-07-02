@@ -2,7 +2,8 @@ package postgres
 
 import (
 	"context"
-	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v4"
+	"github.com/jackc/pgx/v4/pgxpool"
 	"log"
 	"yaGoShortURL/internal/entity"
 )
@@ -49,30 +50,37 @@ func (pg *Postgres) WriteURL(fullURL string, shortURL string, userID uint64) err
 }
 
 func (pg *Postgres) DeleteURLsDB(userID uint64, IDs []string) error {
+
 	ctx := context.Background()
-	// Start transaction
-	tx, err := pg.Pool.Begin(ctx)
+	var db *pgxpool.Pool
+	db, err := pgxpool.Connect(ctx, pg.url)
+	defer db.Close()
 	if err != nil {
 		return err
 	}
-	// Defer a rollback in case anything fails.
-	defer func(tx pgx.Tx, ctx context.Context) {
-		err = tx.Rollback(ctx)
-	}(tx, ctx)
 
-	for _, id := range IDs {
-		_, err = pg.Pool.Exec(ctx, deleteURL, userID, id)
-		if err != nil {
-			log.Printf("Failed to delete url in DB")
-
-			return err
-		}
+	tx, err := db.Begin(ctx)
+	if err != nil {
+		return err
 	}
-	// Подтверждение транзакции
+
+	b := &pgx.Batch{}
+	for _, id := range IDs {
+		b.Queue(deleteURL, userID, id)
+	}
+	batchResults := tx.SendBatch(ctx, b)
+	defer batchResults.Close()
+
+	var qerr error
+	var rows pgx.Rows
+	for qerr == nil {
+		rows, qerr = batchResults.Query()
+		rows.Close()
+	}
+
 	err = tx.Commit(ctx)
 	if err != nil {
 		return err
 	}
-
-	return nil
+	return err
 }
