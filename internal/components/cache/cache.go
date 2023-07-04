@@ -1,6 +1,8 @@
 package cache
 
-import "yaGoShortURL/internal/entity"
+import (
+	"yaGoShortURL/internal/entity"
+)
 
 type UrlsRW interface {
 	WriteURL(fullURL string, id uint64) (string, error)

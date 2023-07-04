@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"context"
 	"yaGoShortURL/internal/entity"
 )
 
@@ -24,14 +25,14 @@ func (cu *CashURLService) ReadAllUserURL(id uint64) ([]entity.JSONAllInfo, error
 	return cu.cash.ReadAllUserURL(id)
 }
 
-func (cu *CashURLService) WriteURL(fullURL string, userID uint64) (string, error) {
+func (cu *CashURLService) WriteURL(ctx context.Context, fullURL string, userID uint64) (string, error) {
 	shortURL, err := cu.cash.WriteURL(fullURL, userID)
 	if err != nil {
 		return "", err
 	}
 
 	if cu.usingDB {
-		err = cu.pg.WriteURL(fullURL, shortURL, userID)
+		err = cu.pg.WriteURL(ctx, fullURL, shortURL, userID)
 	} else {
 		err = cu.fileStore.WriteURL(fullURL, shortURL, userID)
 	}
@@ -45,13 +46,13 @@ func (cu *CashURLService) FullURL(id string) (string, bool, error) {
 	return cu.cash.FullURL(id)
 }
 
-func (cu *CashURLService) DeleteURLs(userID uint64, IDs []string) error {
+func (cu *CashURLService) DeleteURLs(ctx context.Context, userID uint64, IDs []string) error {
 	err := cu.cash.DeleteURLs(userID, IDs)
 	if err != nil {
 		return err
 	}
 	if cu.usingDB {
-		err = cu.pg.DeleteURLsDB(userID, IDs)
+		err = cu.pg.DeleteURLsDB(ctx, userID, IDs)
 	}
 	return err
 }

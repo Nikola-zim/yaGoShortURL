@@ -7,7 +7,6 @@ import (
 	"log"
 	"os"
 	"os/signal"
-	"runtime/pprof"
 	"syscall"
 	"yaGoShortURL/internal/components/cache"
 	"yaGoShortURL/internal/components/filestorage"
@@ -53,14 +52,6 @@ func configInit() entity.ConfigInit {
 }
 
 func main() {
-	// Profiling
-	f, perr := os.Create("cpu.pprof")
-	if perr != nil {
-		log.Fatal(perr)
-	}
-	pprof.StartCPUProfile(f)
-	defer pprof.StopCPUProfile()
-
 	ctx := context.Background()
 	// Конфигурирование сервиса
 	cfg := configInit()

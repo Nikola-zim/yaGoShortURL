@@ -3,14 +3,18 @@ package middlewares
 import (
 	"github.com/gin-gonic/gin"
 	"log"
-	"yaGoShortURL/internal/usecase"
 )
 
-type UserInteract struct {
-	service usecase.Cache
+type Cache interface {
+	FindUser(idMsg string) (uint64, bool)
+	AddUser() (string, uint64, error)
 }
 
-func NewUserInteract(service usecase.Cache) *UserInteract {
+type UserInteract struct {
+	service Cache
+}
+
+func NewUserInteract(service Cache) *UserInteract {
 	return &UserInteract{
 		service: service,
 	}

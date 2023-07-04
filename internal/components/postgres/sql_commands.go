@@ -15,12 +15,4 @@ const (
 		SET deleted = true
 		WHERE shorted_url = $2 AND user_id = $1;
 		`
-
-	batchDeleteURL = `
-		UPDATE urls as u 
-		SET deleted = true
-		FROM (values 
-		    ('$1', $2)
-		    )
-		`
 )

@@ -40,8 +40,8 @@ func (m DBService) RecoverAllURL(ctx context.Context) error {
 	return nil
 }
 
-func (m DBService) WriteURLInDB(fullURL string, id string, userID uint64) error {
-	err := m.db.WriteURL(fullURL, id, userID)
+func (m DBService) WriteURLInDB(ctx context.Context, fullURL string, id string, userID uint64) error {
+	err := m.db.WriteURL(ctx, fullURL, id, userID)
 	if err != nil {
 		log.Printf("internal - usecase - RecoverAllURL")
 		return err
@@ -49,6 +49,6 @@ func (m DBService) WriteURLInDB(fullURL string, id string, userID uint64) error 
 	return nil
 }
 
-func (m DBService) DeleteURLsDB(userID uint64, IDs []string) error {
+func (m DBService) DeleteURLsDB(ctx context.Context, userID uint64, IDs []string) error {
 	return nil
 }

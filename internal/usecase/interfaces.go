@@ -32,9 +32,9 @@ type FileStoreURL interface {
 
 type DataBase interface {
 	PingDB() error
-	WriteURL(fullURL string, id string, userID uint64) error
+	WriteURL(ctx context.Context, fullURL string, id string, userID uint64) error
 	GetAllURL(ctx context.Context) ([]entity.DataURL, error)
-	DeleteURLsDB(userID uint64, IDs []string) error
+	DeleteURLsDB(ctx context.Context, userID uint64, IDs []string) error
 }
 
 type Memory interface {
