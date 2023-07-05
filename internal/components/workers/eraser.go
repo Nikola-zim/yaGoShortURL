@@ -34,6 +34,9 @@ func (er *Eraser) Run() {
 		}
 		if er.usingDB {
 			err = er.pg.DeleteURLsDB(er.ctx, msg.UserID, msg.List)
+			if err != nil {
+				log.Printf("[workers - eraser - Run - pg.DeleteURLs]: %s", err)
+			}
 		}
 	}
 }
@@ -47,6 +50,9 @@ func (er *Eraser) ShutDown() {
 		}
 		if er.usingDB {
 			err = er.pg.DeleteURLsDB(er.ctx, msg.UserID, msg.List)
+			if err != nil {
+				log.Printf("[workers - eraser - Run - pg.DeleteURLs]: %s", err)
+			}
 		}
 	}
 }
