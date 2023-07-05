@@ -42,8 +42,8 @@ func (er *Eraser) Run() {
 }
 
 func (er *Eraser) ShutDown() {
-	var msg entity.DeleteMsg
-	for msg = range er.toDeleteMsg {
+	close(er.toDeleteMsg)
+	for msg := range er.toDeleteMsg {
 		err := er.cash.DeleteURLs(msg.UserID, msg.List)
 		if err != nil {
 			log.Printf("[workers - eraser - Run - cash.DeleteURLs]: %s", err)
