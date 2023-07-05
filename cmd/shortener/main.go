@@ -11,6 +11,7 @@ import (
 	"yaGoShortURL/internal/components/cache"
 	"yaGoShortURL/internal/components/filestorage"
 	"yaGoShortURL/internal/components/postgres"
+	"yaGoShortURL/internal/components/workers"
 	"yaGoShortURL/internal/controller/handlers"
 	"yaGoShortURL/internal/entity"
 	"yaGoShortURL/internal/usecase"
@@ -36,14 +37,15 @@ func configInit() entity.ConfigInit {
 	if cfg.PostgresURL == "" {
 		flag.StringVar(&cfg.PostgresURL, "d", "", "Postgres URL address")
 	}
+	if cfg.DelBatch == 0 {
+		flag.Int64Var(&cfg.DelBatch, "batch", 1000, "Delete messages batch size")
+	}
 
 	flag.Parse()
 	cfg.UnitTestFlag = false
 
 	if cfg.PostgresURL != "" {
 		cfg.UsingDB = true
-		//cfg.PostgresURL = fmt.Sprintf("postgres://%s:%s@%s/%s", "yaGoShortURL", "yaGoShortURL", cfg.PostgresURL, "yaGoShortURL")
-		//cfg.PostgresURL += "?sslmode=require"
 	} else {
 		cfg.UsingDB = false
 	}
@@ -73,8 +75,15 @@ func main() {
 
 	serverFileStorage := filestorage.NewFileStorage(cfg.UnitTestFlag, cfg.FileStoragePath)
 
+	// Канал для асинхронной записи удалений
+	toDeleteMsg := make(chan entity.DeleteMsg, cfg.DelBatch)
+
+	// Воркер для асинхронного удаления URL
+	eraser := workers.NewEraser(ctx, serverCash, pg, cfg.UsingDB, toDeleteMsg)
+	go eraser.Run()
+
 	// Инициализация use case
-	services := usecase.NewService(serverCash, serverFileStorage, pg, cfg.UsingDB)
+	services := usecase.NewService(serverCash, serverFileStorage, pg, cfg.UsingDB, toDeleteMsg)
 
 	// Хендлеры
 	myHandlers := handlers.NewHandler(services, cfg.BaseURL)
@@ -118,10 +127,13 @@ func main() {
 	close(cancelChan)
 	log.Printf("Caught signal %v", sig)
 
-	//Завершение работы с файлами
+	// Завершение работы с файлами
 	err = serverFileStorage.CloseFile()
 	log.Printf("Closing files")
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	// Завершение работы eraser
+	eraser.ShutDown()
 }

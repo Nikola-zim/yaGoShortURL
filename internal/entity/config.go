@@ -7,4 +7,5 @@ type ConfigInit struct {
 	UnitTestFlag    bool
 	PostgresURL     string `env:"DATABASE_DSN"`
 	UsingDB         bool
+	DelBatch        int64
 }

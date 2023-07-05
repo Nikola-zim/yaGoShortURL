@@ -28,3 +28,8 @@ type ResBatchAPI struct {
 type DeleteList struct {
 	List []string
 }
+
+type DeleteMsg struct {
+	List   []string
+	UserID uint64
+}

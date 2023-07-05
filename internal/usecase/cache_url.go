@@ -6,18 +6,20 @@ import (
 )
 
 type CashURLService struct {
-	cash      CacheURL
-	fileStore FileStoreURL
-	pg        DataBase
-	usingDB   bool
+	cash        CacheURL
+	fileStore   FileStoreURL
+	pg          DataBase
+	usingDB     bool
+	toDeleteMsg chan entity.DeleteMsg
 }
 
-func NewCashURLService(cash CacheURL, fileStore FileStoreURL, pg DataBase, usingDB bool) *CashURLService {
+func NewCashURLService(cash CacheURL, fileStore FileStoreURL, pg DataBase, usingDB bool, msg chan entity.DeleteMsg) *CashURLService {
 	return &CashURLService{
-		cash:      cash,
-		fileStore: fileStore,
-		pg:        pg,
-		usingDB:   usingDB,
+		cash:        cash,
+		fileStore:   fileStore,
+		pg:          pg,
+		usingDB:     usingDB,
+		toDeleteMsg: msg,
 	}
 }
 
@@ -47,12 +49,11 @@ func (cu *CashURLService) FullURL(id string) (string, bool, error) {
 }
 
 func (cu *CashURLService) DeleteURLs(ctx context.Context, userID uint64, IDs []string) error {
-	err := cu.cash.DeleteURLs(userID, IDs)
-	if err != nil {
-		return err
+	msg := entity.DeleteMsg{
+		List:   IDs,
+		UserID: userID,
 	}
-	if cu.usingDB {
-		err = cu.pg.DeleteURLsDB(ctx, userID, IDs)
-	}
-	return err
+	cu.toDeleteMsg <- msg
+
+	return nil
 }
