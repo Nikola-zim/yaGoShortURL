@@ -1,5 +1,7 @@
 package usecase
 
+import "yaGoShortURL/internal/entity"
+
 type Service struct {
 	CashURLService
 	MemoryService
@@ -7,9 +9,9 @@ type Service struct {
 	DBService
 }
 
-func NewService(cash Cache, fileStorage FileStoreURL, dataBase DataBase, usingDB bool) *Service {
+func NewService(cash Cache, fileStorage FileStoreURL, dataBase DataBase, usingDB bool, toDeleteMsg chan entity.DeleteMsg) *Service {
 	return &Service{
-		CashURLService: *NewCashURLService(cash, fileStorage, dataBase, usingDB),
+		CashURLService: *NewCashURLService(cash, fileStorage, dataBase, usingDB, toDeleteMsg),
 		MemoryService:  *NewMemoryService(cash, fileStorage),
 		AuthService:    *NewAuthService(cash),
 		DBService:      *NewDBService(cash, dataBase),

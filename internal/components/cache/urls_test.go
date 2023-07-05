@@ -86,7 +86,7 @@ func TestUrls_ReadURLFromCash(t *testing.T) {
 			u := &Urls{
 				URLs: tt.fields.URLs,
 			}
-			got, err := u.FullURL(tt.args.id)
+			got, _, err := u.FullURL(tt.args.id)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("FullURL() error = %v, wantErr %v", err, tt.wantErr)
 				return

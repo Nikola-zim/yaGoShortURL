@@ -2,6 +2,8 @@ package postgres
 
 import (
 	"context"
+	"github.com/jackc/pgx/v4"
+	"github.com/jackc/pgx/v4/pgxpool"
 	"log"
 	"yaGoShortURL/internal/entity"
 )
@@ -34,8 +36,7 @@ func (pg *Postgres) GetAllURL(ctx context.Context) ([]entity.DataURL, error) {
 	return res, nil
 }
 
-func (pg *Postgres) WriteURL(fullURL string, shortURL string, userID uint64) error {
-	ctx := context.Background()
+func (pg *Postgres) WriteURL(ctx context.Context, fullURL string, shortURL string, userID uint64) error {
 	_, err := pg.Pool.Exec(ctx, writeURL, shortURL, fullURL, userID)
 
 	if err != nil {
@@ -45,4 +46,38 @@ func (pg *Postgres) WriteURL(fullURL string, shortURL string, userID uint64) err
 	}
 
 	return nil
+}
+
+func (pg *Postgres) DeleteURLsDB(ctx context.Context, userID uint64, IDs []string) error {
+	var db *pgxpool.Pool
+	db, err := pgxpool.Connect(ctx, pg.url)
+	if err != nil {
+		return err
+	}
+	defer db.Close()
+
+	tx, err := db.Begin(ctx)
+	if err != nil {
+		return err
+	}
+
+	b := &pgx.Batch{}
+	for _, id := range IDs {
+		b.Queue(deleteURL, userID, id)
+	}
+	batchResults := tx.SendBatch(ctx, b)
+	defer batchResults.Close()
+
+	var qerr error
+	var rows pgx.Rows
+	for qerr == nil {
+		rows, qerr = batchResults.Query()
+		rows.Close()
+	}
+
+	err = tx.Commit(ctx)
+	if err != nil {
+		return err
+	}
+	return err
 }

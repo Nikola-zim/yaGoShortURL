@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"context"
 	"github.com/gin-gonic/gin"
 	"yaGoShortURL/internal/controller/middlewares"
 	"yaGoShortURL/internal/entity"
@@ -11,12 +12,15 @@ type addAndGetURL interface {
 	getURL(c *gin.Context)
 	addAndGetJSON(c *gin.Context)
 	addAndGetBatchURL(c *gin.Context)
+	GetAllUserURL(c *gin.Context)
+	DeleteUserURL(c *gin.Context)
 }
 
 type addAndGetURLService interface {
-	WriteURL(fullURL string, id uint64) (string, error)
-	FullURL(id string) (string, error)
+	WriteURL(ctx context.Context, fullURL string, id uint64) (string, error)
+	FullURL(id string) (string, bool, error)
 	ReadAllUserURL(id uint64) ([]entity.JSONAllInfo, error)
+	DeleteURLs(ctx context.Context, userID uint64, IDs []string) error
 }
 
 type authUser interface {
@@ -33,12 +37,6 @@ type Cache interface {
 	addAndGetURLService
 	authUser
 	DBService
-}
-
-// Добавление id пользователя (запись кук)
-type authorizationService interface {
-	AddUser() (string, error)
-	FindUser()
 }
 
 type Handler struct {
@@ -74,7 +72,8 @@ func (h *Handler) InitRoutes() *gin.Engine {
 	shorten.Use(h.UserInteract.CookieSetAndGet())
 	{
 		shorten.POST("shorten", h.addAndGetJSON)
-		shorten.GET("user/urls", h.UserInteract.GetAllUserURL)
+		shorten.GET("user/urls", h.GetAllUserURL)
+		shorten.DELETE("user/urls", h.DeleteUserURL)
 		shorten.POST("shorten/batch", h.addAndGetBatchURL)
 	}
 
