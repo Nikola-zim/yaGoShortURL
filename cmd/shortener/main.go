@@ -80,8 +80,9 @@ func main() {
 
 	// Воркер для асинхронного удаления URL
 	eraser := workers.NewEraser(ctx, serverCash, pg, cfg.UsingDB, toDeleteMsg)
-	go eraser.Run()
-
+	go func() {
+		eraser.Run()
+	}()
 	// Инициализация use case
 	services := usecase.NewService(serverCash, serverFileStorage, pg, cfg.UsingDB, toDeleteMsg)
 
