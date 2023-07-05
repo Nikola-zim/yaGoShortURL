@@ -12,6 +12,7 @@ import (
 	"yaGoShortURL/internal/components/filestorage"
 	"yaGoShortURL/internal/components/postgres"
 	"yaGoShortURL/internal/controller/handlers"
+	"yaGoShortURL/internal/entity"
 	"yaGoShortURL/internal/usecase"
 )
 
@@ -99,8 +100,11 @@ func TestPingRoute(t *testing.T) {
 		log.Println("app - Run - postgres.New: %w", err)
 	}
 	defer pg.Close()
+	// Канал для асинхронной записи удалений
+	toDeleteMsg := make(chan entity.DeleteMsg, cfg.DelBatch)
+
 	serverFileStorage := filestorage.NewFileStorage(cfg.UnitTestFlag, cfg.FileStoragePath)
-	services := usecase.NewService(serverCash, serverFileStorage, pg, cfg.UsingDB)
+	services := usecase.NewService(serverCash, serverFileStorage, pg, cfg.UsingDB, toDeleteMsg)
 	myHandlers := handlers.NewHandler(services, cfg.BaseURL)
 
 	router := myHandlers.InitRoutes()
